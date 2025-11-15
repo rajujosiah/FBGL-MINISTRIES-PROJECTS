@@ -1,0 +1,385 @@
+/* Team Page Styles */
+
+.team-page {
+  min-height: 100vh;
+  background-color: var(--gray-50);
+  padding: 1rem 0;
+}
+
+.team-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.team-header {
+  margin-bottom: 1.5rem;
+}
+
+.team-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 0.75rem;
+}
+
+.team-subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.team-member-card {
+  background-color: var(--white);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.team-member-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.team-member-avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  margin: 0 auto 0.75rem;
+  overflow: hidden;
+  background-color: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-member-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: var(--ministry-blue);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.team-member-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 0.375rem;
+}
+
+.team-member-role {
+  color: var(--ministry-blue);
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.team-member-id {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  margin-bottom: 0.375rem;
+}
+
+.team-member-location {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  margin-bottom: 0.75rem;
+}
+
+.team-member-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.team-member-contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--gray-600);
+}
+
+.team-member-contact-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.team-member-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.team-member-btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.team-member-btn-primary {
+  background-color: var(--ministry-blue);
+  color: var(--white);
+}
+
+.team-member-btn-primary:hover {
+  background-color: var(--ministry-dark-blue);
+}
+
+.team-member-btn-secondary {
+  background-color: var(--ministry-gold);
+  color: var(--ministry-blue);
+}
+
+.team-member-btn-secondary:hover {
+  background-color: #facc15;
+}
+
+.team-member-btn-icon {
+  gap: 0.25rem;
+}
+
+.team-empty {
+  text-align: center;
+  padding: 2rem;
+}
+
+.team-empty-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 0.75rem;
+  color: var(--gray-400);
+}
+
+.team-empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 0.375rem;
+}
+
+.team-empty-description {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+}
+
+/* Team Member Modal */
+.team-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
+}
+
+.team-modal-content {
+  background-color: var(--white);
+  border-radius: 0.75rem;
+  max-width: 36rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.team-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.team-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.team-modal-close {
+  color: var(--gray-400);
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-size: 1.25rem;
+}
+
+.team-modal-close:hover {
+  color: var(--gray-600);
+}
+
+.team-modal-body {
+  padding: 1rem;
+}
+
+.team-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.team-modal-avatar {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-modal-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-modal-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: var(--ministry-blue);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.team-modal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.team-modal-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.team-modal-role {
+  color: var(--ministry-blue);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.team-modal-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.team-modal-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.team-modal-detail-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--gray-500);
+}
+
+.team-modal-detail-value {
+  color: var(--gray-900);
+  font-size: 0.875rem;
+}
+
+.team-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.team-modal-btn {
+  padding: 0.375rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.team-modal-btn-primary {
+  background-color: var(--ministry-gold);
+  color: var(--ministry-blue);
+}
+
+.team-modal-btn-primary:hover {
+  background-color: #facc15;
+}
+
+.team-modal-btn-secondary {
+  background-color: var(--gray-300);
+  color: var(--gray-700);
+}
+
+.team-modal-btn-secondary:hover {
+  background-color: var(--gray-400);
+}
+
+/* Responsive Design */
+@media (min-width: 640px) {
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .team-modal-grid {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .team-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .team-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+

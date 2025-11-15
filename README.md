@@ -1,70 +1,201 @@
-# Getting Started with Create React App
+# FBGL Ministry Website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A comprehensive React website for FIRST BORN GOSPEL LIFE MINISTRIES with role-based access control, team management, and project tracking.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### Public Features
+- **Home Page**: Hero section, ministry overview, focus areas, testimonials
+- **Team Page**: Hierarchical team navigation (Area Managers → Project Managers → Social Workers)
+- **Projects Page**: Filterable project gallery with detailed views
+- **Contact Page**: Contact form with Google Maps integration
+- **Donate Page**: PayPal integration and bank transfer options
 
-### `npm start`
+### Admin Features
+- **Admin Dashboard**: Overview of ministry statistics and recent activity
+- **Team Management**: Add/edit team members with auto-generated FBGL IDs
+- **Access Control**: Manage user permissions and roles
+- **Blog & Events**: Content management for ministry updates
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Role-Based Dashboards
+- **Area Managers**: Manage Project Managers and view hierarchy
+- **Project Managers**: Manage Social Workers and projects
+- **Social Workers**: Manage their assigned projects
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Technology Stack
 
-### `npm test`
+- **Frontend**: React 18, React Router, Tailwind CSS
+- **Backend**: Supabase (PostgreSQL, Authentication, Storage)
+- **Deployment**: Vercel
+- **Payment**: PayPal integration
+- **Image Storage**: Base64 compression and storage
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## ID System
 
-### `npm run build`
+Team members are assigned unique IDs in the format:
+`FBGL-[STATE]-[DISTRICT]-[ROLE]-[COUNT]`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Example: `FBGL-AP-EG-A01` (Andhra Pradesh, East Godavari, Area Manager, 1st)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Setup Instructions
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 1. Environment Setup
 
-### `npm run eject`
+1. Copy `env.example` to `.env.local`
+2. Fill in your Supabase credentials:
+   ```
+   REACT_APP_SUPABASE_URL=your_supabase_project_url
+   REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+   REACT_APP_PAYPAL_CLIENT_ID=your_paypal_client_id
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 2. Supabase Database Setup
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Create the following tables in your Supabase project:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+#### profiles table
+```sql
+CREATE TABLE profiles (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  name TEXT NOT NULL,
+  profile_picture_base64 TEXT,
+  id_number TEXT UNIQUE NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('admin', 'area_manager', 'project_manager', 'social_worker')),
+  state_code TEXT NOT NULL,
+  district_code TEXT NOT NULL,
+  address TEXT,
+  phone TEXT,
+  email TEXT,
+  aadhar_no TEXT,
+  assigned_to UUID REFERENCES profiles(id),
+  is_active BOOLEAN DEFAULT true,
+  can_edit_profile BOOLEAN DEFAULT false,
+  can_add_projects BOOLEAN DEFAULT false,
+  can_manage_team BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#### projects table
+```sql
+CREATE TABLE projects (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('social', 'economic', 'educational')),
+  location TEXT,
+  area_of_operation TEXT,
+  target_beneficiaries TEXT,
+  status TEXT NOT NULL CHECK (status IN ('ongoing', 'completed', 'upcoming')),
+  images_base64 JSONB,
+  assigned_to UUID REFERENCES profiles(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-## Learn More
+#### blog_posts table
+```sql
+CREATE TABLE blog_posts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  author_id UUID REFERENCES profiles(id),
+  images_base64 JSONB,
+  published_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### donations table
+```sql
+CREATE TABLE donations (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  donor_name TEXT,
+  amount DECIMAL(10,2),
+  payment_method TEXT,
+  transaction_id TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+#### contact_messages table
+```sql
+CREATE TABLE contact_messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-### Code Splitting
+### 3. Row Level Security (RLS)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Enable RLS on all tables and create appropriate policies for role-based access.
 
-### Analyzing the Bundle Size
+### 4. Local Development
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```bash
+# Install dependencies
+npm install
 
-### Making a Progressive Web App
+# Start development server
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 5. Deployment to Vercel
 
-### Advanced Configuration
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Set environment variables in Vercel dashboard
+4. Deploy
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Project Structure
 
-### Deployment
+```
+src/
+├── components/          # Reusable components
+├── pages/              # Page components
+│   ├── admin/          # Admin-only pages
+│   └── dashboard/      # Role-based dashboards
+├── context/            # React context providers
+├── services/           # API services (Supabase)
+├── utils/              # Utility functions
+└── App.js              # Main app component
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Key Features
 
-### `npm run build` fails to minify
+### Image Compression
+- Automatic image compression before base64 conversion
+- Maximum file size: 500KB per image
+- Supports multiple image formats
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### ID Generation
+- Automatic FBGL ID generation based on state, district, and role
+- Sequential numbering per role per district
+- Unique constraint enforcement
+
+### Role-Based Access
+- Admin: Full access to all features
+- Area Manager: Manage Project Managers and view hierarchy
+- Project Manager: Manage Social Workers and projects
+- Social Worker: Manage assigned projects only
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is proprietary to FIRST BORN GOSPEL LIFE MINISTRIES.
+
+## Support
+
+For technical support, contact the development team at Kingdom Creative Media.

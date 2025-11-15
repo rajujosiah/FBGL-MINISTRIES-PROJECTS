@@ -1,0 +1,348 @@
+/* Card Component Styles */
+
+.card {
+  background-color: var(--white);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  margin-top: 0.25rem;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.card-footer {
+  padding: 0.75rem 1rem;
+  background-color: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* Ministry Cards */
+.ministry-card {
+  background-color: var(--white);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--gray-200);
+}
+
+.ministry-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-4px);
+}
+
+.ministry-card-header {
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--ministry-blue) 0%, var(--ministry-light-blue) 100%);
+  color: var(--white);
+}
+
+.ministry-card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ministry-card-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  margin-top: 0.25rem;
+}
+
+.ministry-card-body {
+  padding: 1rem;
+}
+
+.ministry-card-footer {
+  padding: 0.75rem 1rem;
+  background-color: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* Profile Cards */
+.profile-card {
+  text-align: center;
+  padding: 1rem;
+}
+
+.profile-card-avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  margin: 0 auto 0.75rem;
+  overflow: hidden;
+  background-color: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-card-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: var(--ministry-blue);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.profile-card-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 0.5rem;
+}
+
+.profile-card-role {
+  color: var(--ministry-blue);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.profile-card-id {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  margin-bottom: 0.75rem;
+}
+
+.profile-card-location {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  margin-bottom: 0.75rem;
+}
+
+.profile-card-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.profile-card-contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--gray-600);
+}
+
+.profile-card-contact-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Project Cards */
+.project-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card-image {
+  width: 100%;
+  height: 8rem;
+  object-fit: cover;
+  background-color: var(--gray-200);
+}
+
+.project-card-image-placeholder {
+  width: 100%;
+  height: 8rem;
+  background-color: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-400);
+}
+
+.project-card-content {
+  padding: 1rem;
+}
+
+.project-card-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.project-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.project-card-description {
+  color: var(--gray-600);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.project-card-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--gray-600);
+}
+
+.project-card-detail-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.project-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-ongoing {
+  background-color: var(--blue-100);
+  color: var(--blue-800);
+}
+
+.badge-completed {
+  background-color: var(--green-100);
+  color: var(--green-800);
+}
+
+.badge-upcoming {
+  background-color: var(--yellow-100);
+  color: #ca8a04;
+}
+
+.badge-social {
+  background-color: var(--red-100);
+  color: var(--red-800);
+}
+
+.badge-economic {
+  background-color: var(--green-100);
+  color: var(--green-800);
+}
+
+.badge-educational {
+  background-color: var(--blue-100);
+  color: var(--blue-800);
+}
+
+.badge-admin {
+  background-color: var(--red-100);
+  color: var(--red-800);
+}
+
+.badge-area-manager {
+  background-color: var(--blue-100);
+  color: var(--blue-800);
+}
+
+.badge-project-manager {
+  background-color: var(--green-100);
+  color: var(--green-800);
+}
+
+.badge-social-worker {
+  background-color: var(--yellow-100);
+  color: #ca8a04;
+}
+
+/* Card Grids */
+.card-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+.card-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.card-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.card-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Responsive Design */
+@media (min-width: 640px) {
+  .card-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .card-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .card-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+

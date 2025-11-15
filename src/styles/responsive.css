@@ -1,0 +1,920 @@
+/* Enhanced Responsive Design System */
+
+/* Mobile First Approach - Base styles for mobile devices (320px - 639px) */
+@media (max-width: 639px) {
+  /* Container adjustments */
+  .container {
+    padding: 0 0.75rem;
+    max-width: 100%;
+  }
+  
+  /* Typography adjustments */
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    font-size: 1.75rem;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+  
+  h2, .text-3xl {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+  
+  h3, .text-2xl {
+    font-size: 1.25rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+  
+  h4, .text-xl {
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+  
+  p, .text-base {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  /* Button adjustments */
+  .btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    min-height: 2rem;
+  }
+  
+  .btn-lg {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    min-height: 2.5rem;
+  }
+  
+  .btn-sm {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.6875rem;
+    min-height: 1.75rem;
+  }
+  
+  /* Card adjustments */
+  .card {
+    margin-bottom: 0.75rem;
+    border-radius: 0.375rem;
+  }
+  
+  .card-body {
+    padding: 0.75rem;
+  }
+  
+  .card-title {
+    font-size: 0.875rem;
+    margin-bottom: 0.375rem;
+  }
+  
+  /* Form adjustments */
+  .form-input,
+  .form-textarea,
+  .form-select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.75rem;
+    min-height: 2.75rem;
+  }
+  
+  .form-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Navigation adjustments */
+  .navbar-content {
+    height: 3rem;
+    padding: 0 0.75rem;
+  }
+  
+  .navbar-brand-text {
+    display: none;
+  }
+  
+  .navbar-logo {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .navbar-user-name {
+    display: none;
+  }
+  
+  /* Grid adjustments */
+  .grid-responsive {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* Modal adjustments */
+  .modal-content {
+    margin: 0.75rem;
+    max-height: calc(100vh - 1.5rem);
+    border-radius: 0.75rem;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+  
+  .modal-footer {
+    padding: 1rem;
+  }
+  
+  /* Table adjustments */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0.5rem;
+  }
+  
+  .table-responsive table {
+    min-width: 500px;
+    font-size: 0.875rem;
+  }
+  
+  /* Section padding */
+  .section-padding {
+    padding: 1.5rem 0;
+  }
+  
+  /* Hero sections */
+  .hero-section {
+    min-height: 50vh;
+    padding: 1.5rem 0;
+  }
+  
+  /* Footer adjustments */
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  
+  .footer-logo {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+/* Small devices (640px - 767px) */
+@media (min-width: 640px) {
+  .container {
+    padding: 0 1rem;
+    max-width: 640px;
+  }
+  
+  /* Typography improvements */
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    font-size: 2.25rem;
+    line-height: 1.2;
+  }
+  
+  h2, .text-3xl {
+    font-size: 1.875rem;
+    line-height: 1.3;
+  }
+  
+  h3, .text-2xl {
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+  
+  h4, .text-xl {
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+  
+  p, .text-base {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* Grid improvements */
+  .grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  /* Button improvements */
+  .btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    min-height: 2.75rem;
+  }
+  
+  .btn-lg {
+    padding: 1rem 1.5rem;
+    font-size: 1.125rem;
+    min-height: 3.25rem;
+  }
+  
+  /* Card improvements */
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .card-title {
+    font-size: 1rem;
+  }
+  
+  /* Navigation improvements */
+  .navbar-brand-text {
+    display: block;
+  }
+  
+  .navbar-logo {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  
+  .navbar-user-name {
+    display: block;
+  }
+  
+  /* Form improvements */
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 0.875rem;
+    min-height: 3rem;
+  }
+  
+  /* Section padding */
+  .section-padding {
+    padding: 2rem 0;
+  }
+  
+  /* Hero sections */
+  .hero-section {
+    min-height: 60vh;
+    padding: 2rem 0;
+  }
+  
+  /* Footer improvements */
+  .footer-content {
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    text-align: left;
+  }
+  
+  .footer-logo {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+/* Medium devices (768px - 1023px) */
+@media (min-width: 768px) {
+  .container {
+    padding: 0 1.5rem;
+    max-width: 768px;
+  }
+  
+  /* Typography improvements */
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    font-size: 2.75rem;
+    line-height: 1.1;
+  }
+  
+  h2, .text-3xl {
+    font-size: 2.25rem;
+    line-height: 1.2;
+  }
+  
+  h3, .text-2xl {
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+  
+  h4, .text-xl {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+  
+  p, .text-base {
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+  
+  /* Grid improvements */
+  .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  
+  /* Navigation improvements */
+  .navbar-nav {
+    display: flex;
+  }
+  
+  .navbar-mobile-btn {
+    display: none;
+  }
+  
+  .navbar-logo {
+    width: 4rem;
+    height: 4rem;
+  }
+  
+  /* Card improvements */
+  .card-body {
+    padding: 1.25rem;
+  }
+  
+  .card-title {
+    font-size: 1.125rem;
+  }
+  
+  /* Form improvements */
+  .form-horizontal {
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+  }
+  
+  .form-horizontal .form-label {
+    text-align: right;
+    padding-top: 0.875rem;
+  }
+  
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 1rem;
+    min-height: 3.25rem;
+  }
+  
+  /* Section padding */
+  .section-padding {
+    padding: 2.5rem 0;
+  }
+  
+  /* Hero sections */
+  .hero-section {
+    min-height: 70vh;
+    padding: 2.5rem 0;
+  }
+  
+  /* Footer improvements */
+  .footer-content {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2.5rem;
+  }
+  
+  .footer-logo {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+
+/* Large devices (1024px - 1279px) */
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+    max-width: 1024px;
+  }
+  
+  /* Typography improvements */
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    font-size: 3.5rem;
+    line-height: 1.1;
+  }
+  
+  h2, .text-3xl {
+    font-size: 2.75rem;
+    line-height: 1.2;
+  }
+  
+  h3, .text-2xl {
+    font-size: 2rem;
+    line-height: 1.3;
+  }
+  
+  h4, .text-xl {
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+  
+  p, .text-base {
+    font-size: 1.25rem;
+    line-height: 1.7;
+  }
+  
+  /* Grid improvements */
+  .grid-responsive {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.5rem;
+  }
+  
+  /* Card improvements */
+  .card-body {
+    padding: 2rem;
+  }
+  
+  .card-title {
+    font-size: 1.75rem;
+  }
+  
+  /* Form improvements */
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 1.125rem;
+    min-height: 3.5rem;
+  }
+  
+  /* Enhanced spacing */
+  .section-padding {
+    padding: 3rem 0;
+  }
+  
+  /* Hero sections */
+  .hero-section {
+    min-height: 80vh;
+    padding: 3rem 0;
+  }
+  
+  /* Footer improvements */
+  .footer-content {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+  }
+  
+  .footer-logo {
+    width: 4rem;
+    height: 4rem;
+  }
+}
+
+/* Extra large devices (1280px - 1535px) */
+@media (min-width: 1280px) {
+  .container {
+    padding: 0 2.5rem;
+    max-width: 1280px;
+  }
+  
+  /* Typography improvements */
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    font-size: 4rem;
+    line-height: 1.1;
+  }
+  
+  h2, .text-3xl {
+    font-size: 3rem;
+    line-height: 1.2;
+  }
+  
+  h3, .text-2xl {
+    font-size: 2.25rem;
+    line-height: 1.3;
+  }
+  
+  h4, .text-xl {
+    font-size: 2rem;
+    line-height: 1.3;
+  }
+  
+  p, .text-base {
+    font-size: 1.375rem;
+    line-height: 1.7;
+  }
+  
+  /* Grid improvements */
+  .grid-responsive {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 3rem;
+  }
+  
+  /* Card improvements */
+  .card-body {
+    padding: 2.5rem;
+  }
+  
+  .card-title {
+    font-size: 2rem;
+  }
+  
+  /* Form improvements */
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 1.25rem;
+    min-height: 3.75rem;
+  }
+  
+  /* Enhanced spacing */
+  .section-padding {
+    padding: 3.5rem 0;
+  }
+  
+  /* Hero sections */
+  .hero-section {
+    min-height: 90vh;
+    padding: 3.5rem 0;
+  }
+  
+  /* Footer improvements */
+  .footer-content {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+  }
+  
+  .footer-logo {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+}
+
+/* Ultra wide devices (1536px and up) */
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 3rem;
+  }
+  
+  /* Typography improvements */
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    font-size: 4.5rem;
+    line-height: 1.1;
+  }
+  
+  h2, .text-3xl {
+    font-size: 3.5rem;
+    line-height: 1.2;
+  }
+  
+  h3, .text-2xl {
+    font-size: 2.5rem;
+    line-height: 1.3;
+  }
+  
+  h4, .text-xl {
+    font-size: 2.25rem;
+    line-height: 1.3;
+  }
+  
+  p, .text-base {
+    font-size: 1.5rem;
+    line-height: 1.7;
+  }
+  
+  /* Grid improvements */
+  .grid-responsive {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 3.5rem;
+  }
+  
+  /* Card improvements */
+  .card-body {
+    padding: 3rem;
+  }
+  
+  .card-title {
+    font-size: 2.25rem;
+  }
+  
+  /* Form improvements */
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 1.5rem;
+    min-height: 4rem;
+  }
+  
+  /* Enhanced spacing */
+  .section-padding {
+    padding: 4rem 0;
+  }
+  
+  /* Hero sections */
+  .hero-section {
+    min-height: 90vh;
+    padding: 4rem 0;
+  }
+  
+  /* Footer improvements */
+  .footer-content {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3.5rem;
+  }
+  
+  .footer-logo {
+    width: 5rem;
+    height: 5rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .navbar,
+  .footer,
+  .btn,
+  .modal,
+  .dropdown,
+  .no-print {
+    display: none !important;
+  }
+  
+  .app-main {
+    padding: 0;
+  }
+  
+  .container {
+    max-width: none;
+    padding: 0;
+  }
+  
+  .card {
+    box-shadow: none;
+    border: 1px solid #000;
+    break-inside: avoid;
+  }
+  
+  .text-gray-600,
+  .text-gray-500,
+  .text-gray-400 {
+    color: #000 !important;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+  
+  .page-break {
+    page-break-before: always;
+  }
+  
+  /* Typography for print */
+  h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
+    page-break-after: avoid;
+  }
+  
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .card {
+    border: 2px solid #000;
+    background: #fff;
+  }
+  
+  .btn {
+    border: 2px solid #000;
+  }
+  
+  .form-input,
+  .form-textarea,
+  .form-select {
+    border: 2px solid #000;
+    background: #fff;
+  }
+  
+  .navbar,
+  .footer {
+    border: 1px solid #000;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .card:hover,
+  .btn:hover {
+    transform: none !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --gray-50: #1f2937;
+    --gray-100: #374151;
+    --gray-200: #4b5563;
+    --gray-300: #6b7280;
+    --gray-400: #9ca3af;
+    --gray-500: #d1d5db;
+    --gray-600: #e5e7eb;
+    --gray-700: #f3f4f6;
+    --gray-800: #f9fafb;
+    --gray-900: #ffffff;
+    --white: #1f2937;
+  }
+  
+  .card {
+    background-color: var(--gray-100);
+    border-color: var(--gray-200);
+  }
+  
+  .form-input,
+  .form-textarea,
+  .form-select {
+    background-color: var(--gray-100);
+    border-color: var(--gray-200);
+    color: var(--gray-900);
+  }
+  
+  .navbar,
+  .footer {
+    background-color: var(--gray-100);
+    border-color: var(--gray-200);
+  }
+}
+
+/* Focus management for accessibility */
+.focus-visible {
+  outline: 2px solid var(--ministry-blue);
+  outline-offset: 2px;
+}
+
+/* Skip links for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--ministry-blue);
+  color: var(--white);
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 4px;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  .navbar-content {
+    height: 3rem;
+  }
+  
+  .hero-section {
+    min-height: 80vh;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+  }
+  
+  .section-padding {
+    padding: 2rem 0;
+  }
+}
+
+/* Portrait orientation adjustments */
+@media (orientation: portrait) and (max-width: 768px) {
+  .grid-responsive {
+    grid-template-columns: 1fr;
+  }
+  
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero-section {
+    min-height: 70vh;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem 1rem;
+  }
+  
+  .navbar-nav-item {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+  }
+  
+  .card:hover {
+    transform: none;
+  }
+  
+  .btn:hover {
+    transform: none;
+  }
+  
+  .form-input,
+  .form-textarea,
+  .form-select {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .logo,
+  .icon,
+  .navbar-logo,
+  .footer-logo {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Very small screens (320px and below) */
+@media (max-width: 320px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+  
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    font-size: 1.5rem;
+  }
+  
+  h2, .text-3xl {
+    font-size: 1.25rem;
+  }
+  
+  .btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    min-height: 2.25rem;
+  }
+  
+  .card-body {
+    padding: 0.75rem;
+  }
+  
+  .navbar-logo {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .footer-logo {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+/* Large screens (1920px and up) */
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
+    padding: 0 4rem;
+  }
+  
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    font-size: 5rem;
+  }
+  
+  h2, .text-3xl {
+    font-size: 4rem;
+  }
+  
+  .section-padding {
+    padding: 8rem 0;
+  }
+  
+  .hero-section {
+    min-height: 100vh;
+    padding: 8rem 0;
+  }
+  
+  .footer-logo {
+    width: 7rem;
+    height: 7rem;
+  }
+}

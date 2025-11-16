@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { IoMdCheckmarkCircle, IoMdMail, IoMdCall, IoMdMap } from 'react-icons/io';
 import './Contact.css';
 
 const Contact = () => {
@@ -40,7 +41,7 @@ const Contact = () => {
             <h2>Send us a Message</h2>
             {submitted ? (
               <div className="success-message">
-                <p>✅ Thank you for your message! We'll get back to you soon.</p>
+                <p><IoMdCheckmarkCircle style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} /> Thank you for your message! We'll get back to you soon.</p>
               </div>
             ) : (
               <form className="contact-form" onSubmit={handleSubmit}>
@@ -93,7 +94,7 @@ const Contact = () => {
             
             <div className="contact-info-card">
               <div className="info-item">
-                <div className="info-icon">📧</div>
+                <IoMdMail className="info-icon" />
                 <div className="info-content">
                   <h3>Email</h3>
                   <a href="mailto:fbglministries2016@gmail.com">fbglministries2016@gmail.com</a>
@@ -101,7 +102,7 @@ const Contact = () => {
               </div>
 
               <div className="info-item">
-                <div className="info-icon">📱</div>
+                <IoMdCall className="info-icon" />
                 <div className="info-content">
                   <h3>Phone</h3>
                   <a href="tel:+917780634778">+91 77806 34778</a>
@@ -109,7 +110,7 @@ const Contact = () => {
               </div>
 
               <div className="info-item">
-                <div className="info-icon">📍</div>
+                <IoMdMap className="info-icon" />
                 <div className="info-content">
                   <h3>Address</h3>
                   <p>FBGL Ministries, Glorious Church<br />

@@ -81,6 +81,7 @@ CREATE TABLE social_workers (
 CREATE TABLE projects (
   id BIGSERIAL PRIMARY KEY,
   social_worker_id BIGINT REFERENCES social_workers(id) ON DELETE SET NULL,
+  project_manager_id BIGINT REFERENCES project_managers(id) ON DELETE SET NULL,
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   category VARCHAR(50), -- 'social', 'economy', 'education'

@@ -1,8 +1,24 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { getBlogPosts, initializeData } from '../utils/dataManager';
+import { IoMdPeople, IoMdBriefcase, IoMdSchool } from 'react-icons/io';
 import './Home.css';
 
 const Home = () => {
+  const navigate = useNavigate();
+  const [blogPosts, setBlogPosts] = useState([]);
+
+  useEffect(() => {
+    const loadBlogPosts = async () => {
+      await initializeData();
+      const posts = await getBlogPosts();
+      // Get latest 3 blog posts
+      if (Array.isArray(posts)) {
+        setBlogPosts(posts.slice(-3).reverse());
+      }
+    };
+    loadBlogPosts();
+  }, []);
   return (
     <div className="home">
       {/* Hero Banner */}
@@ -63,19 +79,19 @@ const Home = () => {
           <h2>Our Key Focus Areas</h2>
           <div className="focus-grid">
             <div className="focus-card">
-              <div className="focus-icon">👥</div>
+              <IoMdPeople className="focus-icon" />
               <h3>Social</h3>
               <p>Community development, health awareness, and social welfare programs that strengthen families and neighborhoods.</p>
               <Link to="/projects?category=social" className="focus-link">View Projects →</Link>
             </div>
             <div className="focus-card">
-              <div className="focus-icon">💼</div>
+              <IoMdBriefcase className="focus-icon" />
               <h3>Economy</h3>
               <p>Economic empowerment through skill development, micro-enterprise support, and financial literacy programs.</p>
               <Link to="/projects?category=economy" className="focus-link">View Projects →</Link>
             </div>
             <div className="focus-card">
-              <div className="focus-icon">📚</div>
+              <IoMdSchool className="focus-icon" />
               <h3>Education</h3>
               <p>Educational support, scholarships, tutoring programs, and resources to ensure every child has access to quality education.</p>
               <Link to="/projects?category=education" className="focus-link">View Projects →</Link>
@@ -83,6 +99,38 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Blog Section */}
+      {blogPosts.length > 0 && (
+        <section className="blog-section">
+          <div className="container">
+            <h2>Latest News & Updates</h2>
+            <p className="blog-section-subtitle">Stay updated with our latest activities and news</p>
+            <div className="blog-grid">
+              {blogPosts.map(post => (
+                <article key={post.id} className="blog-card" onClick={() => navigate(`/blog/${post.id}`)}>
+                  {post.featured_image && (
+                    <div className="blog-card-image">
+                      <img src={post.featured_image} alt={post.title} />
+                    </div>
+                  )}
+                  <div className="blog-card-content">
+                    <h3 className="blog-card-title-only">{post.title}</h3>
+                    <Link to={`/blog/${post.id}`} className="blog-read-more-btn" onClick={(e) => e.stopPropagation()}>
+                      Read More
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+            {blogPosts.length >= 3 && (
+              <div className="blog-section-cta">
+                <Link to="/blog" className="btn btn-primary">View All Blog Posts</Link>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Call to Action */}
       <section className="cta-section">

@@ -3,8 +3,7 @@
   color: white;
   padding: 1rem 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 1000;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
@@ -117,6 +116,44 @@
   box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
 }
 
+.login-btn,
+.dashboard-btn,
+.logout-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white !important;
+  padding: 0.6rem 1.5rem !important;
+  border-radius: 8px;
+  font-weight: 600 !important;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.login-btn:hover,
+.dashboard-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.logout-btn {
+  background: rgba(220, 53, 69, 0.2);
+  border-color: rgba(220, 53, 69, 0.5);
+}
+
+.logout-btn:hover {
+  background: rgba(220, 53, 69, 0.3);
+  border-color: rgba(220, 53, 69, 0.7);
+}
+
+.login-btn::after,
+.dashboard-btn::after {
+  display: none;
+}
+
 .mobile-menu-toggle {
   display: none;
   flex-direction: column;
@@ -160,10 +197,17 @@
     visibility: visible;
   }
 
-  .nav a {
+  .nav a,
+  .nav button {
     width: 100%;
     padding: 1rem 2rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: left;
+  }
+
+  .nav button {
+    background: transparent;
+    border: none;
   }
 
   .logo-section {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { IoMdCheckmarkCircle, IoMdHome, IoMdBriefcase, IoMdRestaurant, IoMdSchool } from 'react-icons/io';
 import './Donate.css';
 
 const Donate = () => {
@@ -42,22 +43,22 @@ const Donate = () => {
               <h3>How Your Donation is Used</h3>
               <div className="usage-grid">
                 <div className="usage-card">
-                  <div className="usage-icon">📚</div>
+                  <IoMdSchool className="usage-icon" />
                   <h4>Education Programs</h4>
                   <p>Supporting education for underprivileged children through scholarships, school supplies, and tutoring programs.</p>
                 </div>
                 <div className="usage-card">
-                  <div className="usage-icon">🍽️</div>
+                  <IoMdRestaurant className="usage-icon" />
                   <h4>Feeding Programs</h4>
                   <p>Providing nutritious meals to families and children in need through our community feeding initiatives.</p>
                 </div>
                 <div className="usage-card">
-                  <div className="usage-icon">🏠</div>
+                  <IoMdHome className="usage-icon" />
                   <h4>Community Development</h4>
                   <p>Building stronger communities through infrastructure development, health awareness, and social welfare programs.</p>
                 </div>
                 <div className="usage-card">
-                  <div className="usage-icon">💼</div>
+                  <IoMdBriefcase className="usage-icon" />
                   <h4>Economic Empowerment</h4>
                   <p>Enabling financial independence through skill development, micro-enterprise support, and vocational training.</p>
                 </div>
@@ -72,10 +73,10 @@ const Donate = () => {
                 sustainable change in our communities.
               </p>
               <ul>
-                <li>✅ Consistent support for ongoing programs</li>
-                <li>✅ Priority updates on project progress</li>
-                <li>✅ Recognition as a ministry partner</li>
-                <li>✅ Tax-deductible donations</li>
+                <li><IoMdCheckmarkCircle style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} /> Consistent support for ongoing programs</li>
+                <li><IoMdCheckmarkCircle style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} /> Priority updates on project progress</li>
+                <li><IoMdCheckmarkCircle style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} /> Recognition as a ministry partner</li>
+                <li><IoMdCheckmarkCircle style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} /> Tax-deductible donations</li>
               </ul>
             </div>
           </div>

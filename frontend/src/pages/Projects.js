@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { getProjects } from '../utils/supabase';
-import { sampleProjects } from '../utils/sampleData';
+import { getProjects, initializeData } from '../utils/dataManager';
+import { IoMdMap, IoMdPeople } from 'react-icons/io';
 import './Projects.css';
 
 const Projects = () => {
@@ -21,20 +21,16 @@ const Projects = () => {
     filterProjects();
   }, [selectedCategory, projects]);
 
-  const loadProjects = async () => {
+  const loadProjects = () => {
     setLoading(true);
     try {
-      const data = await getProjects();
-      if (data) {
-        setProjects(data);
-        setUseSampleData(false);
-      } else {
-        setProjects(sampleProjects);
-        setUseSampleData(true);
-      }
+      initializeData();
+      const data = getProjects({}); // Get all projects with empty filters
+      setProjects(data);
+      setUseSampleData(false);
     } catch (error) {
       console.error('Error loading projects:', error);
-      setProjects(sampleProjects);
+      setProjects([]);
       setUseSampleData(true);
     } finally {
       setLoading(false);
@@ -140,22 +136,37 @@ const Projects = () => {
                   <div className="project-details">
                     {project.area_of_operation && (
                       <div className="project-detail-item">
-                        <strong>📍 Area:</strong> {project.area_of_operation}
+                        <strong><IoMdMap style={{ marginRight: '0.25rem', verticalAlign: 'middle' }} /> Area:</strong> {project.area_of_operation}
                       </div>
                     )}
                     {project.location && (
                       <div className="project-detail-item">
-                        <strong>📍 Location:</strong> {project.location}
+                        <strong><IoMdMap style={{ marginRight: '0.25rem', verticalAlign: 'middle' }} /> Location:</strong> {project.location}
                       </div>
                     )}
                     {project.target_beneficiaries && (
                       <div className="project-detail-item">
-                        <strong>👥 Beneficiaries:</strong> {project.target_beneficiaries}
+                        <strong><IoMdPeople style={{ marginRight: '0.25rem', verticalAlign: 'middle' }} /> Beneficiaries:</strong> {project.target_beneficiaries}
                       </div>
                     )}
                   </div>
+                  {project.images && project.images.length > 1 && (
+                    <div className="project-images-preview">
+                      <p className="project-images-count">{project.images.length} images</p>
+                    </div>
+                  )}
                   <div className="project-actions">
-                    <button className="btn-view-details">View Details</button>
+                    {project.images && project.images.length > 0 && (
+                      <button 
+                        className="btn-view-details"
+                        onClick={() => {
+                          // Open image gallery modal (to be implemented)
+                          alert('Image gallery feature coming soon!');
+                        }}
+                      >
+                        View Images ({project.images.length})
+                      </button>
+                    )}
                     <Link to="/donate" className="btn-support">Support Project</Link>
                   </div>
                 </div>

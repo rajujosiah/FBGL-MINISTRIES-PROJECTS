@@ -1,9 +1,14 @@
-// Sample data for testing when Supabase is not configured
+// Comprehensive Sample Data for FBGL Ministries Website
+// This file contains all sample data for testing when Supabase is not configured
+
+// ============================================================================
+// AREA MANAGERS
+// ============================================================================
 export const sampleAreaManagers = [
   {
     id: 1,
     name: 'John Doe',
-    id_no: 'FBGL AP EG A01',
+    id_no: 'FBGLAPEGA01',
     profile_picture: 'https://randomuser.me/api/portraits/men/32.jpg',
     area_manager: 'Andhra Pradesh - East Godavari',
     state: 'Andhra Pradesh',
@@ -18,7 +23,7 @@ export const sampleAreaManagers = [
   {
     id: 2,
     name: 'Jane Smith',
-    id_no: 'FBGL AP WG A02',
+    id_no: 'FBGLAPWGA02',
     profile_picture: 'https://randomuser.me/api/portraits/women/44.jpg',
     area_manager: 'Andhra Pradesh - West Godavari',
     state: 'Andhra Pradesh',
@@ -33,7 +38,7 @@ export const sampleAreaManagers = [
   {
     id: 3,
     name: 'Rajesh Kumar',
-    id_no: 'FBGL AP KR A03',
+    id_no: 'FBGLAPKRA03',
     profile_picture: 'https://randomuser.me/api/portraits/men/78.jpg',
     area_manager: 'Andhra Pradesh - Krishna',
     state: 'Andhra Pradesh',
@@ -48,7 +53,7 @@ export const sampleAreaManagers = [
   {
     id: 4,
     name: 'Priya Sharma',
-    id_no: 'FBGL AP CH A04',
+    id_no: 'FBGLAPCHA04',
     profile_picture: 'https://randomuser.me/api/portraits/women/56.jpg',
     area_manager: 'Andhra Pradesh - Chittoor',
     state: 'Andhra Pradesh',
@@ -63,7 +68,7 @@ export const sampleAreaManagers = [
   {
     id: 5,
     name: 'Mohammed Ali',
-    id_no: 'FBGL TG HY A05',
+    id_no: 'FBGLTGHYA05',
     profile_picture: 'https://randomuser.me/api/portraits/men/62.jpg',
     area_manager: 'Telangana - Hyderabad',
     state: 'Telangana',
@@ -77,12 +82,15 @@ export const sampleAreaManagers = [
   }
 ];
 
+// ============================================================================
+// PROJECT MANAGERS
+// ============================================================================
 export const sampleProjectManagers = [
   {
     id: 1,
     area_manager_id: 1,
     name: 'Michael Johnson',
-    id_no: 'FBGL AP EG P01',
+    id_no: 'FBGLAPEGP01',
     profile_picture: 'https://randomuser.me/api/portraits/men/45.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -97,7 +105,7 @@ export const sampleProjectManagers = [
     id: 2,
     area_manager_id: 1,
     name: 'Sarah Williams',
-    id_no: 'FBGL AP EG P02',
+    id_no: 'FBGLAPEGP02',
     profile_picture: 'https://randomuser.me/api/portraits/women/68.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -112,7 +120,7 @@ export const sampleProjectManagers = [
     id: 3,
     area_manager_id: 1,
     name: 'Thomas George',
-    id_no: 'FBGL AP EG P03',
+    id_no: 'FBGLAPEGP03',
     profile_picture: 'https://randomuser.me/api/portraits/men/71.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -127,7 +135,7 @@ export const sampleProjectManagers = [
     id: 4,
     area_manager_id: 2,
     name: 'Rebecca Johnson',
-    id_no: 'FBGL AP WG P04',
+    id_no: 'FBGLAPWGP04',
     profile_picture: 'https://randomuser.me/api/portraits/women/73.jpg',
     state: 'Andhra Pradesh',
     district: 'West Godavari',
@@ -142,7 +150,7 @@ export const sampleProjectManagers = [
     id: 5,
     area_manager_id: 2,
     name: 'James Wilson',
-    id_no: 'FBGL AP WG P05',
+    id_no: 'FBGLAPWGP05',
     profile_picture: 'https://randomuser.me/api/portraits/men/74.jpg',
     state: 'Andhra Pradesh',
     district: 'West Godavari',
@@ -157,7 +165,7 @@ export const sampleProjectManagers = [
     id: 6,
     area_manager_id: 3,
     name: 'Anita Reddy',
-    id_no: 'FBGL AP KR P06',
+    id_no: 'FBGLAPKRP06',
     profile_picture: 'https://randomuser.me/api/portraits/women/76.jpg',
     state: 'Andhra Pradesh',
     district: 'Krishna',
@@ -172,7 +180,7 @@ export const sampleProjectManagers = [
     id: 7,
     area_manager_id: 3,
     name: 'Samuel Moses',
-    id_no: 'FBGL AP KR P07',
+    id_no: 'FBGLAPKRP07',
     profile_picture: 'https://randomuser.me/api/portraits/men/77.jpg',
     state: 'Andhra Pradesh',
     district: 'Krishna',
@@ -187,7 +195,7 @@ export const sampleProjectManagers = [
     id: 8,
     area_manager_id: 4,
     name: 'Grace Mary',
-    id_no: 'FBGL AP CH P08',
+    id_no: 'FBGLAPCHP08',
     profile_picture: 'https://randomuser.me/api/portraits/women/79.jpg',
     state: 'Andhra Pradesh',
     district: 'Chittoor',
@@ -202,7 +210,7 @@ export const sampleProjectManagers = [
     id: 9,
     area_manager_id: 5,
     name: 'Ibrahim Khan',
-    id_no: 'FBGL TG HY P09',
+    id_no: 'FBGLTGHYP09',
     profile_picture: 'https://randomuser.me/api/portraits/men/80.jpg',
     state: 'Telangana',
     district: 'Hyderabad',
@@ -215,12 +223,15 @@ export const sampleProjectManagers = [
   }
 ];
 
+// ============================================================================
+// SOCIAL WORKERS
+// ============================================================================
 export const sampleSocialWorkers = [
   {
     id: 1,
     project_manager_id: 1,
     name: 'David Brown',
-    id_no: 'FBGL AP EG S01',
+    id_no: 'FBGLAPEGS01',
     profile_picture: 'https://randomuser.me/api/portraits/men/52.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -235,7 +246,7 @@ export const sampleSocialWorkers = [
     id: 2,
     project_manager_id: 1,
     name: 'Emma Davis',
-    id_no: 'FBGL AP EG S02',
+    id_no: 'FBGLAPEGS02',
     profile_picture: 'https://randomuser.me/api/portraits/women/50.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -250,7 +261,7 @@ export const sampleSocialWorkers = [
     id: 3,
     project_manager_id: 1,
     name: 'Robert Wilson',
-    id_no: 'FBGL AP EG S03',
+    id_no: 'FBGLAPEGS03',
     profile_picture: 'https://randomuser.me/api/portraits/men/67.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -265,7 +276,7 @@ export const sampleSocialWorkers = [
     id: 4,
     project_manager_id: 1,
     name: 'Lisa Anderson',
-    id_no: 'FBGL AP EG S04',
+    id_no: 'FBGLAPEGS04',
     profile_picture: 'https://randomuser.me/api/portraits/women/75.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -280,7 +291,7 @@ export const sampleSocialWorkers = [
     id: 5,
     project_manager_id: 1,
     name: 'Peter Samuel',
-    id_no: 'FBGL AP EG S05',
+    id_no: 'FBGLAPEGS05',
     profile_picture: 'https://randomuser.me/api/portraits/men/81.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -295,7 +306,7 @@ export const sampleSocialWorkers = [
     id: 6,
     project_manager_id: 2,
     name: 'Mary George',
-    id_no: 'FBGL AP EG S06',
+    id_no: 'FBGLAPEGS06',
     profile_picture: 'https://randomuser.me/api/portraits/women/82.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -310,7 +321,7 @@ export const sampleSocialWorkers = [
     id: 7,
     project_manager_id: 2,
     name: 'Daniel Joseph',
-    id_no: 'FBGL AP EG S07',
+    id_no: 'FBGLAPEGS07',
     profile_picture: 'https://randomuser.me/api/portraits/men/83.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -325,7 +336,7 @@ export const sampleSocialWorkers = [
     id: 8,
     project_manager_id: 3,
     name: 'Ruth Abraham',
-    id_no: 'FBGL AP EG S08',
+    id_no: 'FBGLAPEGS08',
     profile_picture: 'https://randomuser.me/api/portraits/women/84.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -340,7 +351,7 @@ export const sampleSocialWorkers = [
     id: 9,
     project_manager_id: 3,
     name: 'Jacob Mathew',
-    id_no: 'FBGL AP EG S09',
+    id_no: 'FBGLAPEGS09',
     profile_picture: 'https://randomuser.me/api/portraits/men/85.jpg',
     state: 'Andhra Pradesh',
     district: 'East Godavari',
@@ -355,7 +366,7 @@ export const sampleSocialWorkers = [
     id: 10,
     project_manager_id: 4,
     name: 'Sophia Benjamin',
-    id_no: 'FBGL AP WG S10',
+    id_no: 'FBGLAPWGS10',
     profile_picture: 'https://randomuser.me/api/portraits/women/86.jpg',
     state: 'Andhra Pradesh',
     district: 'West Godavari',
@@ -370,7 +381,7 @@ export const sampleSocialWorkers = [
     id: 11,
     project_manager_id: 4,
     name: 'Mark Thomas',
-    id_no: 'FBGL AP WG S11',
+    id_no: 'FBGLAPWGS11',
     profile_picture: 'https://randomuser.me/api/portraits/men/87.jpg',
     state: 'Andhra Pradesh',
     district: 'West Godavari',
@@ -385,7 +396,7 @@ export const sampleSocialWorkers = [
     id: 12,
     project_manager_id: 5,
     name: 'Esther David',
-    id_no: 'FBGL AP WG S12',
+    id_no: 'FBGLAPWGS12',
     profile_picture: 'https://randomuser.me/api/portraits/women/88.jpg',
     state: 'Andhra Pradesh',
     district: 'West Godavari',
@@ -400,7 +411,7 @@ export const sampleSocialWorkers = [
     id: 13,
     project_manager_id: 6,
     name: 'Noah Philip',
-    id_no: 'FBGL AP KR S13',
+    id_no: 'FBGLAPKRS13',
     profile_picture: 'https://randomuser.me/api/portraits/men/89.jpg',
     state: 'Andhra Pradesh',
     district: 'Krishna',
@@ -415,7 +426,7 @@ export const sampleSocialWorkers = [
     id: 14,
     project_manager_id: 6,
     name: 'Hannah Sarah',
-    id_no: 'FBGL AP KR S14',
+    id_no: 'FBGLAPKRS14',
     profile_picture: 'https://randomuser.me/api/portraits/women/90.jpg',
     state: 'Andhra Pradesh',
     district: 'Krishna',
@@ -430,7 +441,7 @@ export const sampleSocialWorkers = [
     id: 15,
     project_manager_id: 7,
     name: 'Joshua Daniel',
-    id_no: 'FBGL AP KR S15',
+    id_no: 'FBGLAPKRS15',
     profile_picture: 'https://randomuser.me/api/portraits/men/91.jpg',
     state: 'Andhra Pradesh',
     district: 'Krishna',
@@ -445,7 +456,7 @@ export const sampleSocialWorkers = [
     id: 16,
     project_manager_id: 8,
     name: 'Lydia John',
-    id_no: 'FBGL AP CH S16',
+    id_no: 'FBGLAPCHS16',
     profile_picture: 'https://randomuser.me/api/portraits/women/92.jpg',
     state: 'Andhra Pradesh',
     district: 'Chittoor',
@@ -460,7 +471,7 @@ export const sampleSocialWorkers = [
     id: 17,
     project_manager_id: 9,
     name: 'Andrew Paul',
-    id_no: 'FBGL TG HY S17',
+    id_no: 'FBGLTGHYS17',
     profile_picture: 'https://randomuser.me/api/portraits/men/93.jpg',
     state: 'Telangana',
     district: 'Hyderabad',
@@ -475,7 +486,7 @@ export const sampleSocialWorkers = [
     id: 18,
     project_manager_id: 9,
     name: 'Martha Luke',
-    id_no: 'FBGL TG HY S18',
+    id_no: 'FBGLTGHYS18',
     profile_picture: 'https://randomuser.me/api/portraits/women/94.jpg',
     state: 'Telangana',
     district: 'Hyderabad',
@@ -488,12 +499,17 @@ export const sampleSocialWorkers = [
   }
 ];
 
+// ============================================================================
+// PROJECTS (All projects have project_manager_id and category)
+// ============================================================================
 export const sampleProjects = [
   {
     id: 1,
+    project_manager_id: 1,
     social_worker_id: 1,
     title: 'Free Education for Underprivileged Children',
     description: 'Providing free education and school supplies to children from low-income families in rural areas.',
+    category: 'education',
     area_of_operation: 'Rajahmundry, East Godavari',
     target_beneficiaries: '200 children aged 6-14 years',
     status: 'Ongoing',
@@ -507,9 +523,11 @@ export const sampleProjects = [
   },
   {
     id: 2,
+    project_manager_id: 1,
     social_worker_id: 1,
     title: 'Women\'s Skill Development Program',
     description: 'Empowering women through vocational training in tailoring, computer skills, and entrepreneurship.',
+    category: 'economy',
     area_of_operation: 'Kakinada, East Godavari',
     target_beneficiaries: '150 women aged 18-45 years',
     status: 'Ongoing',
@@ -523,9 +541,11 @@ export const sampleProjects = [
   },
   {
     id: 3,
+    project_manager_id: 1,
     social_worker_id: 2,
     title: 'Community Health Awareness Campaign',
     description: 'Raising awareness about hygiene, nutrition, and preventive healthcare in rural communities.',
+    category: 'social',
     area_of_operation: 'Various villages in East Godavari',
     target_beneficiaries: '500 community members',
     status: 'Completed',
@@ -539,9 +559,11 @@ export const sampleProjects = [
   },
   {
     id: 4,
+    project_manager_id: 1,
     social_worker_id: 1,
     title: 'Digital Literacy Program',
     description: 'Teaching basic computer skills and internet usage to rural youth and adults.',
+    category: 'education',
     area_of_operation: 'Rajahmundry, East Godavari',
     target_beneficiaries: '100 participants aged 16-40 years',
     status: 'Ongoing',
@@ -554,9 +576,11 @@ export const sampleProjects = [
   },
   {
     id: 5,
+    project_manager_id: 1,
     social_worker_id: 3,
     title: 'Agricultural Training Workshop',
     description: 'Providing modern farming techniques and sustainable agriculture practices to farmers.',
+    category: 'economy',
     area_of_operation: 'Rural areas, East Godavari',
     target_beneficiaries: '300 farmers',
     status: 'Ongoing',
@@ -569,9 +593,11 @@ export const sampleProjects = [
   },
   {
     id: 6,
+    project_manager_id: 1,
     social_worker_id: 4,
     title: 'Women Entrepreneurship Development',
     description: 'Training and supporting women to start their own small businesses and become financially independent.',
+    category: 'economy',
     area_of_operation: 'Kakinada, East Godavari',
     target_beneficiaries: '120 women entrepreneurs',
     status: 'Ongoing',
@@ -584,9 +610,11 @@ export const sampleProjects = [
   },
   {
     id: 7,
+    project_manager_id: 1,
     social_worker_id: 5,
     title: 'Career Counseling and Job Placement',
     description: 'Providing career guidance, resume building, and job placement assistance for unemployed youth.',
+    category: 'social',
     area_of_operation: 'Rajahmundry, East Godavari',
     target_beneficiaries: '250 youth aged 18-30 years',
     status: 'Ongoing',
@@ -599,9 +627,11 @@ export const sampleProjects = [
   },
   {
     id: 8,
+    project_manager_id: 2,
     social_worker_id: 6,
     title: 'Senior Citizen Care Program',
     description: 'Providing healthcare, companionship, and support services for elderly people in the community.',
+    category: 'social',
     area_of_operation: 'Kakinada, East Godavari',
     target_beneficiaries: '180 senior citizens',
     status: 'Ongoing',
@@ -614,9 +644,11 @@ export const sampleProjects = [
   },
   {
     id: 9,
+    project_manager_id: 2,
     social_worker_id: 7,
     title: 'Disability Support and Inclusion',
     description: 'Empowering persons with disabilities through skill training, assistive devices, and advocacy programs.',
+    category: 'social',
     area_of_operation: 'Amalapuram, East Godavari',
     target_beneficiaries: '100 persons with disabilities',
     status: 'Ongoing',
@@ -629,9 +661,11 @@ export const sampleProjects = [
   },
   {
     id: 10,
+    project_manager_id: 3,
     social_worker_id: 8,
     title: 'Rural Health Camp Series',
     description: 'Organizing free health check-ups, medical camps, and awareness sessions in remote villages.',
+    category: 'social',
     area_of_operation: 'Various villages, East Godavari',
     target_beneficiaries: '600 villagers',
     status: 'Ongoing',
@@ -644,9 +678,11 @@ export const sampleProjects = [
   },
   {
     id: 11,
+    project_manager_id: 3,
     social_worker_id: 9,
     title: 'Environmental Awareness Campaign',
     description: 'Promoting environmental conservation, tree plantation, and waste management practices.',
+    category: 'social',
     area_of_operation: 'Kakinada, East Godavari',
     target_beneficiaries: '400 community members',
     status: 'Ongoing',
@@ -659,9 +695,11 @@ export const sampleProjects = [
   },
   {
     id: 12,
+    project_manager_id: 4,
     social_worker_id: 10,
     title: 'Scholarship Distribution Program',
     description: 'Providing financial assistance and scholarships to meritorious students from economically weak families.',
+    category: 'education',
     area_of_operation: 'Eluru, West Godavari',
     target_beneficiaries: '150 students',
     status: 'Ongoing',
@@ -674,9 +712,11 @@ export const sampleProjects = [
   },
   {
     id: 13,
+    project_manager_id: 4,
     social_worker_id: 11,
     title: 'Rural Infrastructure Development',
     description: 'Improving access roads, community centers, and basic amenities in remote villages.',
+    category: 'social',
     area_of_operation: 'Bhimavaram, West Godavari',
     target_beneficiaries: '500 villagers',
     status: 'Ongoing',
@@ -689,9 +729,11 @@ export const sampleProjects = [
   },
   {
     id: 14,
+    project_manager_id: 5,
     social_worker_id: 12,
     title: 'Sustainable Agriculture Initiative',
     description: 'Training farmers in organic farming, crop rotation, and eco-friendly agricultural practices.',
+    category: 'economy',
     area_of_operation: 'Eluru, West Godavari',
     target_beneficiaries: '200 farmers',
     status: 'Ongoing',
@@ -704,9 +746,11 @@ export const sampleProjects = [
   },
   {
     id: 15,
+    project_manager_id: 6,
     social_worker_id: 13,
     title: 'Vocational Training Center',
     description: 'Providing hands-on training in tailoring, plumbing, electrical work, and other skilled trades.',
+    category: 'education',
     area_of_operation: 'Vijayawada, Krishna',
     target_beneficiaries: '180 trainees',
     status: 'Ongoing',
@@ -719,9 +763,11 @@ export const sampleProjects = [
   },
   {
     id: 16,
+    project_manager_id: 6,
     social_worker_id: 14,
     title: 'Youth Skill Development Program',
     description: 'Training young people in soft skills, communication, and professional development.',
+    category: 'education',
     area_of_operation: 'Guntur, Krishna',
     target_beneficiaries: '220 youth',
     status: 'Ongoing',
@@ -734,9 +780,11 @@ export const sampleProjects = [
   },
   {
     id: 17,
+    project_manager_id: 7,
     social_worker_id: 15,
     title: 'Child Protection and Safety',
     description: 'Creating safe spaces for children, preventing child labor, and supporting child rights.',
+    category: 'social',
     area_of_operation: 'Vijayawada, Krishna',
     target_beneficiaries: '300 children',
     status: 'Ongoing',
@@ -749,9 +797,11 @@ export const sampleProjects = [
   },
   {
     id: 18,
+    project_manager_id: 8,
     social_worker_id: 16,
     title: 'Women\'s Financial Literacy Program',
     description: 'Educating women about banking, savings, loans, and financial planning for economic empowerment.',
+    category: 'economy',
     area_of_operation: 'Tirupati, Chittoor',
     target_beneficiaries: '160 women',
     status: 'Ongoing',
@@ -764,9 +814,11 @@ export const sampleProjects = [
   },
   {
     id: 19,
+    project_manager_id: 9,
     social_worker_id: 17,
     title: 'Digital Literacy for All',
     description: 'Teaching basic computer skills, internet usage, and digital payment methods to urban residents.',
+    category: 'education',
     area_of_operation: 'Secunderabad, Hyderabad',
     target_beneficiaries: '180 participants',
     status: 'Ongoing',
@@ -779,9 +831,11 @@ export const sampleProjects = [
   },
   {
     id: 20,
+    project_manager_id: 9,
     social_worker_id: 18,
     title: 'Urban Community Engagement',
     description: 'Building strong neighborhoods through community events, volunteer programs, and social activities.',
+    category: 'social',
     area_of_operation: 'Hyderabad',
     target_beneficiaries: '350 community members',
     status: 'Ongoing',
@@ -794,6 +848,9 @@ export const sampleProjects = [
   }
 ];
 
+// ============================================================================
+// BOARD MEMBERS
+// ============================================================================
 export const sampleBoardMembers = [
   {
     id: 1,
@@ -860,3 +917,80 @@ export const sampleBoardMembers = [
   }
 ];
 
+// ============================================================================
+// BLOG POSTS
+// ============================================================================
+export const sampleBlogPosts = [
+  {
+    id: 1,
+    title: 'Free Education Program Reaches 200 Children',
+    content: 'We are thrilled to announce that our Free Education for Underprivileged Children program has successfully reached 200 children across rural areas in East Godavari. The program provides free education, school supplies, and nutritional support to children from low-income families.\n\nThrough the dedicated efforts of our social workers and volunteers, we have established learning centers in 5 villages, ensuring that children have access to quality education close to their homes. The program includes regular classes, tutoring sessions, and educational materials.\n\nWe are grateful for the support of our donors and community members who make this initiative possible. Together, we are transforming lives through education.',
+    author: 'John Doe',
+    excerpt: 'Our Free Education program has successfully reached 200 children across rural areas...',
+    image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop',
+    category: 'education',
+    published: true,
+    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 2,
+    title: 'Women\'s Skill Development Program Empowers 150 Women',
+    content: 'Our Women\'s Skill Development Program has made significant progress, empowering 150 women through vocational training in tailoring, computer skills, and entrepreneurship. The program focuses on providing practical skills that enable women to start their own businesses or find employment.\n\nParticipants receive hands-on training, mentorship, and support in business development. Many graduates have successfully started their own tailoring businesses, while others have found employment in local industries.\n\nThe program has not only improved economic conditions but has also boosted the confidence and self-esteem of the participants. We are proud of their achievements and continue to support them in their journey toward financial independence.',
+    author: 'Sarah Williams',
+    excerpt: '150 women have been empowered through our skill development program...',
+    image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&h=600&fit=crop',
+    category: 'economy',
+    published: true,
+    created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 3,
+    title: 'Community Health Awareness Campaign Completed Successfully',
+    content: 'We are pleased to announce the successful completion of our Community Health Awareness Campaign, which reached 500 community members across various villages in East Godavari. The campaign focused on raising awareness about hygiene, nutrition, and preventive healthcare.\n\nThrough interactive sessions, health camps, and distribution of informational materials, we educated community members about the importance of regular health check-ups, proper nutrition, and hygiene practices. The campaign also included free health screenings and consultations with healthcare professionals.\n\nThe positive response from the community has been overwhelming, and we plan to continue similar initiatives in the future to promote health and wellness in rural areas.',
+    author: 'Thomas George',
+    excerpt: 'Our health awareness campaign reached 500 community members...',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800&h=600&fit=crop',
+    category: 'social',
+    published: true,
+    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 4,
+    title: 'Digital Literacy Program Transforming Lives',
+    content: 'Our Digital Literacy Program has been transforming lives by teaching basic computer skills and internet usage to rural youth and adults. With 100 participants enrolled, the program provides hands-on training in computer operations, internet browsing, email, and digital payment methods.\n\nThe program addresses the digital divide by making technology accessible to rural communities. Participants learn practical skills that enhance their employability and enable them to access online services and information.\n\nMany participants have reported increased confidence in using technology and have found new opportunities for employment and business. We are committed to continuing this program to bridge the digital gap in rural areas.',
+    author: 'Michael Johnson',
+    excerpt: 'Digital Literacy Program teaches essential computer skills to 100 participants...',
+    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop',
+    category: 'education',
+    published: true,
+    created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 5,
+    title: 'Agricultural Training Workshop Benefits 300 Farmers',
+    content: 'Our Agricultural Training Workshop has successfully trained 300 farmers in modern farming techniques and sustainable agriculture practices. The workshop covered topics such as organic farming, crop rotation, water conservation, and pest management.\n\nFarmers learned about innovative methods that can increase crop yields while reducing environmental impact. The workshop included practical demonstrations and field visits to successful organic farms.\n\nThe training has empowered farmers to adopt sustainable practices that improve their livelihoods while protecting the environment. We are proud to support the farming community and contribute to agricultural development.',
+    author: 'Robert Wilson',
+    excerpt: '300 farmers trained in modern and sustainable agriculture practices...',
+    image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=600&fit=crop',
+    category: 'economy',
+    published: true,
+    created_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
+  }
+];
+
+// ============================================================================
+// Export all data as a single object for easy import
+// ============================================================================
+export const allSampleData = {
+  areaManagers: sampleAreaManagers,
+  projectManagers: sampleProjectManagers,
+  socialWorkers: sampleSocialWorkers,
+  projects: sampleProjects,
+  boardMembers: sampleBoardMembers,
+  blogPosts: sampleBlogPosts
+};

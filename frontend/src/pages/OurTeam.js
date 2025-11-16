@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { getAreaManagers, getProjectManagers, getSocialWorkers, getBoardMembers, getProfileById, getProfileByIdNo, getProjects } from '../utils/supabase';
 import { sampleAreaManagers, sampleProjectManagers, sampleSocialWorkers, sampleBoardMembers, sampleProjects } from '../utils/sampleData';
+import IDCard from '../components/IDCard';
+import html2canvas from 'html2canvas';
+import { IoMdCard, IoMdMap, IoMdPeople } from 'react-icons/io';
 import './OurTeam.css';
 
 // Helper function to normalize ID numbers for URLs (remove spaces, uppercase)
@@ -30,6 +33,9 @@ const OurTeam = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [useSampleData, setUseSampleData] = useState(false);
+  const [showIDCard, setShowIDCard] = useState(false);
+  const [idCardUser, setIdCardUser] = useState(null);
+  const [idCardRole, setIdCardRole] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -115,7 +121,7 @@ const OurTeam = () => {
         setProjects(allProjects);
       } else {
         // Load all projects for counting
-        const allProjects = await getProjects();
+        const allProjects = await getProjects({});
         setProjects(allProjects || []);
         // Load social workers for all project managers
         const allSws = [];
@@ -173,7 +179,7 @@ const OurTeam = () => {
           setProjects(allProjects);
         } else {
           // Load all projects for counting
-          const allProjects = await getProjects();
+          const allProjects = await getProjects({});
           setProjects(allProjects || []);
         }
         
@@ -236,7 +242,7 @@ const OurTeam = () => {
         setProjects(allProjects);
       } else {
         // Load all projects for counting
-        const allProjects = await getProjects();
+        const allProjects = await getProjects({});
         setProjects(allProjects || []);
       }
       
@@ -352,7 +358,7 @@ const OurTeam = () => {
         // Load projects for this social worker
         const proj = useSampleData
           ? sampleProjects.filter(p => p.social_worker_id === profile.id)
-          : await getProjects(profile.id);
+          : await getProjects({ socialWorkerId: profile.id });
         
         setProjects(proj || []);
         setActiveTab('social_worker');
@@ -539,7 +545,20 @@ const OurTeam = () => {
     
     return (
       <div className="profile-detail">
-        <button className="back-button" onClick={handleBack}>← Back</button>
+        <div className="profile-detail-header">
+          <button className="back-button" onClick={handleBack}>← Back</button>
+          <button 
+            className="id-card-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIdCardUser(profile);
+              setIdCardRole(profileType);
+              setShowIDCard(true);
+            }}
+          >
+            <IoMdCard style={{ marginRight: '0.5rem' }} /> View ID Card
+          </button>
+        </div>
         <div className="profile-detail-photo">
           <img src={profilePic} alt={profile.name} />
         </div>
@@ -594,6 +613,17 @@ const OurTeam = () => {
 
   return (
     <div className="team-page">
+      {showIDCard && idCardUser && (
+        <div className="modal-overlay" onClick={() => { setShowIDCard(false); setIdCardUser(null); setIdCardRole(null); }}>
+          <div className="modal-content id-card-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>ID Card</h3>
+              <button className="close-btn" onClick={() => { setShowIDCard(false); setIdCardUser(null); setIdCardRole(null); }}>×</button>
+            </div>
+            <IDCard user={idCardUser} role={idCardRole} />
+          </div>
+        </div>
+      )}
       <div className="container">
         <h1>Our Team</h1>
         
@@ -631,17 +661,17 @@ const OurTeam = () => {
                           <div className="project-details">
                             {project.area_of_operation && (
                               <div className="project-detail-item">
-                                <strong>📍 Area:</strong> {project.area_of_operation}
+                                <strong><IoMdMap style={{ marginRight: '0.25rem', verticalAlign: 'middle' }} /> Area:</strong> {project.area_of_operation}
                               </div>
                             )}
                             {project.location && (
                               <div className="project-detail-item">
-                                <strong>📍 Location:</strong> {project.location}
+                                <strong><IoMdMap style={{ marginRight: '0.25rem', verticalAlign: 'middle' }} /> Location:</strong> {project.location}
                               </div>
                             )}
                             {project.target_beneficiaries && (
                               <div className="project-detail-item">
-                                <strong>👥 Beneficiaries:</strong> {project.target_beneficiaries}
+                                <strong><IoMdPeople style={{ marginRight: '0.25rem', verticalAlign: 'middle' }} /> Beneficiaries:</strong> {project.target_beneficiaries}
                               </div>
                             )}
                           </div>

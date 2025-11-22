@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getBlogPosts, initializeData } from '../utils/dataManager';
+import { getBlogPosts, getBlogPostById, initializeData } from '../utils/dataManager';
 import './BlogDetail.css';
 
 const BlogDetail = () => {
@@ -11,23 +11,40 @@ const BlogDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    initializeData();
-    const posts = getBlogPosts();
-    const foundPost = posts.find(p => p.id === parseInt(id));
-    setPost(foundPost);
-    setLoading(false);
+    const loadPost = async () => {
+      try {
+        await initializeData();
+        // Use dedicated function to fetch single post
+        // Check if ID is purely numeric (for integer IDs) or string (for UUIDs)
+        const isNumeric = /^\d+$/.test(id);
+        const postId = isNumeric ? parseInt(id) : id;
+        const foundPost = await getBlogPostById(postId);
+
+        if (foundPost) {
+          setPost(foundPost);
+        } else {
+          console.error('Blog post not found for id:', id);
+        }
+      } catch (error) {
+        console.error('Error loading blog post:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPost();
   }, [id]);
 
   const handlePreviousImage = () => {
     if (!post?.images || post.images.length === 0) return;
-    setCurrentImageIndex((prev) => 
+    setCurrentImageIndex((prev) =>
       prev === 0 ? post.images.length - 1 : prev - 1
     );
   };
 
   const handleNextImage = () => {
     if (!post?.images || post.images.length === 0) return;
-    setCurrentImageIndex((prev) => 
+    setCurrentImageIndex((prev) =>
       prev === post.images.length - 1 ? 0 : prev + 1
     );
   };
@@ -101,7 +118,7 @@ const BlogDetail = () => {
               {post.content.split('\n').map((paragraph, index) => {
                 const trimmed = paragraph.trim();
                 if (!trimmed) return null;
-                
+
                 // Check if it's a heading (starts with #)
                 if (trimmed.startsWith('#')) {
                   const level = trimmed.match(/^#+/)?.[0].length || 1;
@@ -109,7 +126,7 @@ const BlogDetail = () => {
                   const HeadingTag = `h${Math.min(level, 6)}`;
                   return React.createElement(HeadingTag, { key: index, className: 'blog-heading' }, text);
                 }
-                
+
                 // Regular paragraph
                 return <p key={index} className="blog-paragraph">{trimmed}</p>;
               })}
@@ -119,17 +136,17 @@ const BlogDetail = () => {
               <div className="blog-detail-carousel">
                 <h2>Photo Gallery</h2>
                 <div className="carousel-container">
-                  <button 
+                  <button
                     className="carousel-nav carousel-prev"
                     onClick={handlePreviousImage}
                     aria-label="Previous image"
                   >
                     ‹
                   </button>
-                  
+
                   <div className="carousel-main">
-                    <img 
-                      src={post.images[currentImageIndex]} 
+                    <img
+                      src={post.images[currentImageIndex]}
                       alt={`${post.title} - Image ${currentImageIndex + 1}`}
                       className="carousel-main-image"
                     />
@@ -138,7 +155,7 @@ const BlogDetail = () => {
                     </div>
                   </div>
 
-                  <button 
+                  <button
                     className="carousel-nav carousel-next"
                     onClick={handleNextImage}
                     aria-label="Next image"

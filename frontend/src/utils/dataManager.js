@@ -17,10 +17,10 @@ const isSupabaseConfigured = () => {
   const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
   const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-  return !!(supabaseUrl && 
-           supabaseUrl !== 'https://your-project.supabase.co' &&
-           supabaseKey && 
-           supabaseKey !== 'your-anon-key');
+  return !!(supabaseUrl &&
+    supabaseUrl !== 'https://your-project.supabase.co' &&
+    supabaseKey &&
+    supabaseKey !== 'your-anon-key');
 };
 
 // Initialize Supabase connection
@@ -370,6 +370,19 @@ export const getBlogPosts = async () => {
   }
 };
 
+export const getBlogPostById = async (id) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.getBlogPostById(id);
+  } catch (error) {
+    console.error('Error fetching blog post:', error);
+    throw new ConnectionError('Failed to fetch blog post. Please check your internet connection.');
+  }
+};
+
 export const addBlogPost = async (post) => {
   if (!isSupabaseConfigured()) {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
@@ -425,48 +438,86 @@ export const getBoardMembers = async () => {
   }
 };
 
-// ============================================================================
-// STATE/DISTRICT MANAGEMENT (localStorage only - not in Supabase)
-// ============================================================================
-const STORAGE_KEYS = {
-  STATE_DISTRICTS: 'fbgl_state_districts'
-};
+export const addBoardMember = async (member) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
 
-const getData = (key) => {
   try {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
+    return await supabaseManager.addBoardMember(member);
   } catch (error) {
-    console.error(`Error getting data from ${key}:`, error);
-    return [];
+    console.error('Error adding board member:', error);
+    throw new ConnectionError('Failed to add board member. Please check your internet connection.');
   }
 };
 
-const setData = (key, data) => {
+export const updateBoardMember = async (id, updates) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
   try {
-    localStorage.setItem(key, JSON.stringify(data));
-    return true;
+    return await supabaseManager.updateBoardMember(id, updates);
   } catch (error) {
-    console.error(`Error setting data to ${key}:`, error);
-    return false;
+    console.error('Error updating board member:', error);
+    throw new ConnectionError('Failed to update board member. Please check your internet connection.');
   }
 };
 
-export const getStateDistricts = () => getData(STORAGE_KEYS.STATE_DISTRICTS);
+export const deleteBoardMember = async (id) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
 
-export const addStateDistrict = (stateDistrict) => {
-  const stateDistricts = getStateDistricts();
-  const exists = stateDistricts.find(
-    sd => sd.state === stateDistrict.state && sd.district === stateDistrict.district
-  );
-  if (exists) return exists;
-  
-  const newSD = {
-    ...stateDistrict,
-    id: stateDistricts.length > 0 ? Math.max(...stateDistricts.map(sd => sd.id)) + 1 : 1,
-    created_at: new Date().toISOString()
-  };
-  stateDistricts.push(newSD);
-  setData(STORAGE_KEYS.STATE_DISTRICTS, stateDistricts);
-  return newSD;
+  try {
+    return await supabaseManager.deleteBoardMember(id);
+  } catch (error) {
+    console.error('Error deleting board member:', error);
+    throw new ConnectionError('Failed to delete board member. Please check your internet connection.');
+  }
+};
+
+// ============================================================================
+// STATE/DISTRICT MANAGEMENT
+// ============================================================================
+export const getStateDistricts = async () => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.getStateDistricts();
+  } catch (error) {
+    console.error('Error fetching state districts:', error);
+    throw new ConnectionError('Failed to fetch state districts. Please check your internet connection.');
+  }
+};
+
+export const addStateDistrict = async (stateDistrict) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.addStateDistrict(stateDistrict);
+  } catch (error) {
+    console.error('Error adding state district:', error);
+    throw new ConnectionError('Failed to save state district. Please check your internet connection.');
+  }
+};
+
+// ============================================================================
+// AUTHENTICATION
+// ============================================================================
+export const loginUser = async (username, password) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.loginUser(username, password);
+  } catch (error) {
+    console.error('Error logging in:', error);
+    throw new ConnectionError('Failed to login. Please check your internet connection.');
+  }
 };

@@ -11,7 +11,6 @@ const Projects = () => {
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(category || 'all');
   const [loading, setLoading] = useState(true);
-  const [useSampleData, setUseSampleData] = useState(false);
 
   useEffect(() => {
     loadProjects();
@@ -27,11 +26,9 @@ const Projects = () => {
       initializeData();
       const data = getProjects({}); // Get all projects with empty filters
       setProjects(data);
-      setUseSampleData(false);
     } catch (error) {
       console.error('Error loading projects:', error);
       setProjects([]);
-      setUseSampleData(true);
     } finally {
       setLoading(false);
     }
@@ -42,7 +39,7 @@ const Projects = () => {
       setFilteredProjects(projects);
     } else {
       setFilteredProjects(
-        projects.filter(p => 
+        projects.filter(p =>
           p.category?.toLowerCase() === selectedCategory.toLowerCase() ||
           p.title?.toLowerCase().includes(selectedCategory.toLowerCase())
         )
@@ -56,9 +53,9 @@ const Projects = () => {
       'completed': '#6c757d',
       'upcoming': '#ffc107'
     };
-    
+
     const color = statusColors[status?.toLowerCase()] || '#6c757d';
-    
+
     return (
       <span className="status-badge" style={{ backgroundColor: color }}>
         {status || 'Unknown'}
@@ -86,26 +83,26 @@ const Projects = () => {
 
         {/* Category Filter */}
         <div className="category-filter">
-          <button 
-            className={selectedCategory === 'all' ? 'active' : ''} 
+          <button
+            className={selectedCategory === 'all' ? 'active' : ''}
             onClick={() => setSelectedCategory('all')}
           >
             All Projects
           </button>
-          <button 
-            className={selectedCategory === 'social' ? 'active' : ''} 
+          <button
+            className={selectedCategory === 'social' ? 'active' : ''}
             onClick={() => setSelectedCategory('social')}
           >
             Social
           </button>
-          <button 
-            className={selectedCategory === 'economy' ? 'active' : ''} 
+          <button
+            className={selectedCategory === 'economy' ? 'active' : ''}
             onClick={() => setSelectedCategory('economy')}
           >
             Economy
           </button>
-          <button 
-            className={selectedCategory === 'education' ? 'active' : ''} 
+          <button
+            className={selectedCategory === 'education' ? 'active' : ''}
             onClick={() => setSelectedCategory('education')}
           >
             Education
@@ -119,9 +116,9 @@ const Projects = () => {
               <div key={project.id} className="project-card">
                 <div className="project-image">
                   {project.images && project.images.length > 0 ? (
-                    <img 
-                      src={project.images[0] || 'https://via.placeholder.com/400x250?text=' + project.title} 
-                      alt={project.title} 
+                    <img
+                      src={project.images[0] || 'https://via.placeholder.com/400x250?text=' + project.title}
+                      alt={project.title}
                     />
                   ) : (
                     <div className="placeholder-image">
@@ -157,7 +154,7 @@ const Projects = () => {
                   )}
                   <div className="project-actions">
                     {project.images && project.images.length > 0 && (
-                      <button 
+                      <button
                         className="btn-view-details"
                         onClick={() => {
                           // Open image gallery modal (to be implemented)

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  getAreaManagers, 
+import {
+  getAreaManagers,
   assignStateDistrictToAreaManager,
   addAreaManager,
   updateAreaManager,
@@ -25,13 +25,16 @@ const ManageAreaManagers = ({ onUpdate }) => {
     phone: '',
     email: '',
     aadhaar_no: '',
+    aadhaar_no: '',
     bio: '',
+    password: '',
     profile_picture: ''
   });
   const [showIDCard, setShowIDCard] = useState(false);
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   useEffect(() => {
     loadAreaManagers();
@@ -101,26 +104,27 @@ const ManageAreaManagers = ({ onUpdate }) => {
       if (selectedManager) {
         await updateAreaManager(selectedManager.id, formData);
       } else {
-      // Generate ID No
-      const stateCode = getStateCode(formData.state);
-      const districtCode = getDistrictCode(formData.district);
-      const count = areaManagers.filter(am => 
-        am.state === formData.state && am.district === formData.district
-      ).length + 1;
-      const id_no = `FBGL ${stateCode} ${districtCode} A${count.toString().padStart(2, '0')}`;
-      
-      const profilePicture = formData.profile_picture || 
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=1e3c72&color=fff&size=200`;
-      
-      await addAreaManager({
-        ...formData,
-        id_no,
-        profile_picture: profilePicture,
-        area_manager: `${formData.state} - ${formData.district}`
-      });
-    }
-    setShowForm(false);
-    setFormData({ name: '', state: '', district: '', address: '', phone: '', email: '', aadhaar_no: '', bio: '', profile_picture: '' });
+        // Generate ID No
+        const stateCode = getStateCode(formData.state);
+        const districtCode = getDistrictCode(formData.district);
+        const count = areaManagers.filter(am =>
+          am.state === formData.state && am.district === formData.district
+        ).length + 1;
+        const id_no = `FBGL ${stateCode} ${districtCode} A${count.toString().padStart(2, '0')}`;
+
+        const profilePicture = formData.profile_picture ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=1e3c72&color=fff&size=200`;
+
+        await addAreaManager({
+          ...formData,
+          id_no,
+          profile_picture: profilePicture,
+          area_manager: `${formData.state} - ${formData.district}`
+        });
+      }
+      setShowForm(false);
+      setShowForm(false);
+      setFormData({ name: '', state: '', district: '', address: '', phone: '', email: '', aadhaar_no: '', bio: '', password: '', profile_picture: '' });
       setSelectedManager(null);
       setAvailableDistricts([]);
       await loadAreaManagers();
@@ -145,6 +149,7 @@ const ManageAreaManagers = ({ onUpdate }) => {
       email: manager.email || '',
       aadhaar_no: manager.aadhaar_no || '',
       bio: manager.bio || '',
+      password: manager.password || '',
       profile_picture: manager.profile_picture || ''
     });
     if (manager.state) {
@@ -154,20 +159,31 @@ const ManageAreaManagers = ({ onUpdate }) => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this Area Manager?')) {
-      try {
-        setConnectionError(null);
-        await deleteAreaManager(id);
-        await loadAreaManagers();
-        onUpdate?.();
-      } catch (error) {
-        if (error instanceof DataConnectionError) {
-          setConnectionError(error.message);
-        } else {
-          setConnectionError('Failed to delete area manager. Please check your internet connection.');
-        }
+    setDeleteConfirm(id);
+  };
+
+  const confirmDelete = async () => {
+    const id = deleteConfirm;
+    setDeleteConfirm(null);
+
+    try {
+      setConnectionError(null);
+      await deleteAreaManager(id);
+      alert('Area Manager deleted successfully!');
+      await loadAreaManagers();
+      onUpdate?.();
+    } catch (error) {
+      if (error instanceof DataConnectionError) {
+        setConnectionError(error.message);
+      } else {
+        alert(`Failed to delete area manager: ${error.message || 'Unknown error'}`);
+        setConnectionError('Failed to delete area manager. Please check your internet connection.');
       }
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm(null);
   };
 
   const handleViewIDCard = (manager) => {
@@ -178,18 +194,18 @@ const ManageAreaManagers = ({ onUpdate }) => {
   return (
     <div className="manage-section">
       {connectionError && (
-        <ConnectionError 
-          message={connectionError} 
+        <ConnectionError
+          message={connectionError}
           onRetry={loadAreaManagers}
         />
       )}
-      
+
       <div className="section-header">
         <div>
           <h2>Step 1: Manage Area Managers</h2>
           <p className="section-description" style={{ marginTop: '0.5rem', marginBottom: 0 }}>
-            <strong>How it works:</strong> First, create Area Managers and assign them a State and District. 
-            This determines which geographic area they will be responsible for. 
+            <strong>How it works:</strong> First, create Area Managers and assign them a State and District.
+            This determines which geographic area they will be responsible for.
             After this step, you can assign Project Managers to work under these Area Managers.
           </p>
         </div>
@@ -297,6 +313,16 @@ const ManageAreaManagers = ({ onUpdate }) => {
                 </div>
               </div>
               <div className="form-group">
+                <label>Password {selectedManager ? '(Leave blank to keep current)' : '*'}</label>
+                <input
+                  type="text"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder={selectedManager ? "Enter new password to change" : "Enter password for login"}
+                  required={!selectedManager}
+                />
+              </div>
+              <div className="form-group">
                 <label>Bio</label>
                 <textarea
                   value={formData.bio}
@@ -331,7 +357,7 @@ const ManageAreaManagers = ({ onUpdate }) => {
         {areaManagers.map(manager => (
           <div key={manager.id} className="manager-card">
             <div className="manager-header">
-              <img 
+              <img
                 src={manager.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(manager.name)}&background=1e3c72&color=fff&size=200`}
                 alt={manager.name}
                 className="manager-photo"
@@ -370,6 +396,28 @@ const ManageAreaManagers = ({ onUpdate }) => {
 
       {areaManagers.length === 0 && (
         <p className="empty-state">No Area Managers found. Add one to get started.</p>
+      )}
+
+      {deleteConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Confirm Delete</h3>
+            </div>
+            <div style={{ padding: '1.5rem' }}>
+              <p>Are you sure you want to delete this Area Manager?</p>
+              <p style={{ color: '#dc3545', fontWeight: 'bold', marginTop: '1rem' }}>This action cannot be undone.</p>
+            </div>
+            <div className="form-actions">
+              <button className="btn-danger" onClick={confirmDelete}>
+                Delete
+              </button>
+              <button className="btn-secondary" onClick={cancelDelete}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

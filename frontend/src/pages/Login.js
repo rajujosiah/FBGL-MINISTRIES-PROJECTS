@@ -43,7 +43,7 @@ const Login = () => {
 
       const from = location.state?.from?.pathname || '/';
       const redirectTo = roleDashboard[result.user.role] || '/dashboard';
-      
+
       navigate(redirectTo, { replace: true });
     } else {
       setError(result.error || 'Invalid credentials');
@@ -56,9 +56,9 @@ const Login = () => {
       <div className="login-container">
         <div className="login-card">
           <div className="login-header">
-            <img 
-              src={process.env.PUBLIC_URL + '/logo.png'} 
-              alt="FBGL Ministries Logo" 
+            <img
+              src={process.env.PUBLIC_URL + '/logo.png'}
+              alt="FBGL Ministries Logo"
               className="login-logo"
             />
             <h1>FBGL Ministries</h1>
@@ -70,7 +70,7 @@ const Login = () => {
             {error && <div className="error-message">{error}</div>}
 
             <div className="form-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="username">Username / Email</label>
               <input
                 type="text"
                 id="username"

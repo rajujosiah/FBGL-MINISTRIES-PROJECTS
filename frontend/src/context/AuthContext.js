@@ -56,8 +56,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (username, password) => {
-    // Find matching credentials
+  const login = async (username, password) => {
+    // 1. Check Master Credentials first
     const credentials = Object.values(MASTER_CREDENTIALS).find(
       cred => cred.username === username && cred.password === password
     );
@@ -72,9 +72,33 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       localStorage.setItem('fbgl_user', JSON.stringify(userData));
       return { success: true, user: userData };
-    } else {
-      return { success: false, error: 'Invalid username or password' };
     }
+
+    // 2. Check Database for other users
+    try {
+      // Import dynamically to avoid circular dependencies if any, or just standard import
+      const { loginUser } = require('../utils/dataManager');
+      const dbUser = await loginUser(username, password);
+
+      if (dbUser) {
+        const userData = {
+          username: dbUser.email, // Use email as username
+          role: dbUser.role,
+          name: dbUser.name,
+          id: dbUser.id,
+          loginTime: new Date().toISOString(),
+          ...dbUser // Include other user details
+        };
+        setUser(userData);
+        localStorage.setItem('fbgl_user', JSON.stringify(userData));
+        return { success: true, user: userData };
+      }
+    } catch (error) {
+      console.error('Database login error:', error);
+      return { success: false, error: error.message || 'Login failed' };
+    }
+
+    return { success: false, error: 'Invalid username/email or password' };
   };
 
   const logout = () => {

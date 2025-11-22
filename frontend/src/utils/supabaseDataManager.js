@@ -7,10 +7,10 @@ import { ConnectionError } from './dataManager';
 // Helper function to handle Supabase errors
 const handleSupabaseError = (error, operation) => {
   console.error(`Error ${operation}:`, error);
-  
+
   // Check if it's a network/connection error
   if (error.message && (
-    error.message.includes('fetch') || 
+    error.message.includes('fetch') ||
     error.message.includes('network') ||
     error.message.includes('Failed to fetch') ||
     error.code === 'ECONNREFUSED' ||
@@ -18,7 +18,7 @@ const handleSupabaseError = (error, operation) => {
   )) {
     throw new ConnectionError('Failed to connect to the server. Please check your internet connection.');
   }
-  
+
   // Generic connection error
   throw new ConnectionError(`Failed to ${operation}. Please check your internet connection.`);
 };
@@ -75,6 +75,7 @@ export const addAreaManager = async (manager) => {
       .from('area_managers')
       .insert([{
         ...manager,
+        password: manager.password,
         created_at: new Date().toISOString()
       }])
       .select()
@@ -95,9 +96,14 @@ export const addAreaManager = async (manager) => {
 
 export const updateAreaManager = async (id, updates) => {
   try {
+    const updatesToApply = { ...updates };
+    if (!updatesToApply.password) {
+      delete updatesToApply.password;
+    }
+
     const { data, error } = await supabase
       .from('area_managers')
-      .update(updates)
+      .update(updatesToApply)
       .eq('id', id)
       .select()
       .single();
@@ -198,6 +204,7 @@ export const addProjectManager = async (manager) => {
       .from('project_managers')
       .insert([{
         ...manager,
+        password: manager.password,
         created_at: new Date().toISOString()
       }])
       .select()
@@ -218,9 +225,14 @@ export const addProjectManager = async (manager) => {
 
 export const updateProjectManager = async (id, updates) => {
   try {
+    const updatesToApply = { ...updates };
+    if (!updatesToApply.password) {
+      delete updatesToApply.password;
+    }
+
     const { data, error } = await supabase
       .from('project_managers')
-      .update(updates)
+      .update(updatesToApply)
       .eq('id', id)
       .select()
       .single();
@@ -342,6 +354,7 @@ export const addSocialWorker = async (worker) => {
       .from('social_workers')
       .insert([{
         ...worker,
+        password: worker.password,
         created_at: new Date().toISOString()
       }])
       .select()
@@ -362,9 +375,14 @@ export const addSocialWorker = async (worker) => {
 
 export const updateSocialWorker = async (id, updates) => {
   try {
+    const updatesToApply = { ...updates };
+    if (!updatesToApply.password) {
+      delete updatesToApply.password;
+    }
+
     const { data, error } = await supabase
       .from('social_workers')
-      .update(updates)
+      .update(updatesToApply)
       .eq('id', id)
       .select()
       .single();
@@ -714,6 +732,194 @@ export const getBoardMembers = async () => {
   }
 };
 
+export const addBoardMember = async (member) => {
+  try {
+    const { data, error } = await supabase
+      .from('board_members')
+      .insert([{
+        ...member,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      handleSupabaseError(error, 'add board member');
+    }
+
+    return data;
+  } catch (error) {
+    if (error instanceof ConnectionError) {
+      throw error;
+    }
+    handleSupabaseError(error, 'add board member');
+  }
+};
+
+export const updateBoardMember = async (id, updates) => {
+  try {
+    const { data, error } = await supabase
+      .from('board_members')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      handleSupabaseError(error, 'update board member');
+    }
+
+    return data;
+  } catch (error) {
+    if (error instanceof ConnectionError) {
+      throw error;
+    }
+    handleSupabaseError(error, 'update board member');
+  }
+};
+
+export const deleteBoardMember = async (id) => {
+  try {
+    console.log('Attempting to delete board member with ID:', id);
+    const { data, error } = await supabase
+      .from('board_members')
+      .delete()
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Supabase delete error:', error);
+      handleSupabaseError(error, 'delete board member');
+    }
+
+    console.log('Delete operation result:', data);
+    return true;
+  } catch (error) {
+    console.error('Caught error in deleteBoardMember:', error);
+    if (error instanceof ConnectionError) {
+      throw error;
+    }
+    handleSupabaseError(error, 'delete board member');
+  }
+};
+
+// ============================================================================
+// STATE/DISTRICT MANAGEMENT
+// ============================================================================
+export const getStateDistricts = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('state_districts')
+      .select('*')
+      .order('state', { ascending: true })
+      .order('district', { ascending: true });
+
+    if (error) {
+      // If table doesn't exist yet, return empty array instead of crashing
+      if (error.code === '42P01') {
+        console.warn('state_districts table does not exist yet');
+        return [];
+      }
+      handleSupabaseError(error, 'fetch state districts');
+    }
+
+    return data || [];
+  } catch (error) {
+    if (error instanceof ConnectionError) {
+      throw error;
+    }
+    handleSupabaseError(error, 'fetch state districts');
+  }
+};
+
+export const addStateDistrict = async (stateDistrict) => {
+  try {
+    const { data, error } = await supabase
+      .from('state_districts')
+      .insert([{
+        ...stateDistrict,
+        created_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      // Ignore unique constraint violations (duplicate state/district)
+      if (error.code === '23505') {
+        return null;
+      }
+      handleSupabaseError(error, 'add state district');
+    }
+
+    return data;
+  } catch (error) {
+    if (error instanceof ConnectionError) {
+      throw error;
+    }
+    handleSupabaseError(error, 'add state district');
+  }
+};
+
+// ============================================================================
+// AUTHENTICATION
+// ============================================================================
+export const loginUser = async (username, password) => {
+  try {
+    // 1. Check Admins
+    const { data: adminData, error: adminError } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('username', username)
+      .eq('password', password)
+      .single();
+
+    if (adminData) return { ...adminData, role: 'admin' };
+
+    // 2. Check Area Managers (using email or id_no as username)
+    const { data: amData } = await supabase
+      .from('area_managers')
+      .select('*')
+      .or(`email.eq.${username},id_no.eq.${username}`)
+      .eq('password', password)
+      .single();
+
+    if (amData) return { ...amData, role: 'area_manager' };
+
+    // 3. Check Project Managers
+    const { data: pmData } = await supabase
+      .from('project_managers')
+      .select('*')
+      .or(`email.eq.${username},id_no.eq.${username}`)
+      .eq('password', password)
+      .single();
+
+    if (pmData) return { ...pmData, role: 'project_manager' };
+
+    // 4. Check Social Workers
+    const { data: swData } = await supabase
+      .from('social_workers')
+      .select('*')
+      .or(`email.eq.${username},id_no.eq.${username}`)
+      .eq('password', password)
+      .single();
+
+    if (swData) return { ...swData, role: 'social_worker' };
+
+    return null;
+  } catch (error) {
+    if (error instanceof ConnectionError) {
+      throw error;
+    }
+    // Don't throw for login failures, just return null or log
+    console.error('Login error:', error);
+    return null;
+  }
+};
+
 // ============================================================================
 // INITIALIZATION
 // ============================================================================
@@ -723,7 +929,7 @@ export const initializeData = async () => {
   const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || supabaseUrl === 'https://your-project.supabase.co' ||
-      !supabaseKey || supabaseKey === 'your-anon-key') {
+    !supabaseKey || supabaseKey === 'your-anon-key') {
     throw new ConnectionError('Supabase is not configured. Please set REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY in your environment variables.');
   }
 

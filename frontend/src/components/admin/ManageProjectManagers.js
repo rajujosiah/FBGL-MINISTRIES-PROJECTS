@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   getAreaManagers,
-  getProjectManagers, 
+  getProjectManagers,
   addProjectManager,
   updateProjectManager,
   deleteProjectManager,
@@ -27,13 +27,16 @@ const ManageProjectManagers = ({ onUpdate }) => {
     phone: '',
     email: '',
     aadhaar_no: '',
+    aadhaar_no: '',
     bio: '',
+    password: '',
     profile_picture: ''
   });
   const [showIDCard, setShowIDCard] = useState(false);
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -110,37 +113,39 @@ const ManageProjectManagers = ({ onUpdate }) => {
       if (selectedManager) {
         await updateProjectManager(selectedManager.id, formData);
       } else {
-      // Generate ID No
-      const stateCode = getStateCode(formData.state);
-      const districtCode = getDistrictCode(formData.district);
-      const count = projectManagers.filter(pm => 
-        pm.state === formData.state && pm.district === formData.district
-      ).length + 1;
-      const id_no = `FBGL${stateCode}${districtCode}P${count.toString().padStart(2, '0')}`;
-      
-      const profilePicture = formData.profile_picture || 
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=2a5298&color=fff&size=200`;
-      
-      await addProjectManager({
-        ...formData,
-        id_no,
-        profile_picture: profilePicture,
-        area_manager_id: formData.area_manager_id ? parseInt(formData.area_manager_id) : null
+        // Generate ID No
+        const stateCode = getStateCode(formData.state);
+        const districtCode = getDistrictCode(formData.district);
+        const count = projectManagers.filter(pm =>
+          pm.state === formData.state && pm.district === formData.district
+        ).length + 1;
+        const id_no = `FBGL${stateCode}${districtCode}P${count.toString().padStart(2, '0')}`;
+
+        const profilePicture = formData.profile_picture ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=2a5298&color=fff&size=200`;
+
+        await addProjectManager({
+          ...formData,
+          id_no,
+          profile_picture: profilePicture,
+          area_manager_id: formData.area_manager_id ? parseInt(formData.area_manager_id) : null
+        });
+      }
+      setShowForm(false);
+      setFormData({
+        name: '',
+        area_manager_id: '',
+        state: '',
+        district: '',
+        address: '',
+        phone: '',
+        email: '',
+        aadhaar_no: '',
+        aadhaar_no: '',
+        bio: '',
+        password: '',
+        profile_picture: ''
       });
-    }
-    setShowForm(false);
-    setFormData({ 
-      name: '', 
-      area_manager_id: '', 
-      state: '', 
-      district: '', 
-      address: '', 
-      phone: '', 
-      email: '', 
-      aadhaar_no: '', 
-      bio: '', 
-      profile_picture: '' 
-    });
       setSelectedManager(null);
       setAvailableDistricts([]);
       await loadData();
@@ -166,6 +171,7 @@ const ManageProjectManagers = ({ onUpdate }) => {
       email: manager.email || '',
       aadhaar_no: manager.aadhaar_no || '',
       bio: manager.bio || '',
+      password: manager.password || '',
       profile_picture: manager.profile_picture || ''
     });
     if (manager.state) {
@@ -175,20 +181,31 @@ const ManageProjectManagers = ({ onUpdate }) => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this Project Manager?')) {
-      try {
-        setConnectionError(null);
-        await deleteProjectManager(id);
-        await loadData();
-        onUpdate?.();
-      } catch (error) {
-        if (error instanceof DataConnectionError) {
-          setConnectionError(error.message);
-        } else {
-          setConnectionError('Failed to delete project manager. Please check your internet connection.');
-        }
+    setDeleteConfirm(id);
+  };
+
+  const confirmDelete = async () => {
+    const id = deleteConfirm;
+    setDeleteConfirm(null);
+
+    try {
+      setConnectionError(null);
+      await deleteProjectManager(id);
+      alert('Project Manager deleted successfully!');
+      await loadData();
+      onUpdate?.();
+    } catch (error) {
+      if (error instanceof DataConnectionError) {
+        setConnectionError(error.message);
+      } else {
+        alert(`Failed to delete project manager: ${error.message || 'Unknown error'}`);
+        setConnectionError('Failed to delete project manager. Please check your internet connection.');
       }
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm(null);
   };
 
   const handleViewIDCard = (manager) => {
@@ -199,12 +216,12 @@ const ManageProjectManagers = ({ onUpdate }) => {
   return (
     <div className="manage-section">
       {connectionError && (
-        <ConnectionError 
-          message={connectionError} 
+        <ConnectionError
+          message={connectionError}
           onRetry={loadData}
         />
       )}
-      
+
       <div className="section-header">
         <div>
           <h2>Manage Project Managers</h2>
@@ -334,6 +351,16 @@ const ManageProjectManagers = ({ onUpdate }) => {
                 </div>
               </div>
               <div className="form-group">
+                <label>Password {selectedManager ? '(Leave blank to keep current)' : '*'}</label>
+                <input
+                  type="text"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder={selectedManager ? "Enter new password to change" : "Enter password for login"}
+                  required={!selectedManager}
+                />
+              </div>
+              <div className="form-group">
                 <label>Bio</label>
                 <textarea
                   value={formData.bio}
@@ -370,7 +397,7 @@ const ManageProjectManagers = ({ onUpdate }) => {
           return (
             <div key={manager.id} className="manager-card">
               <div className="manager-header">
-                <img 
+                <img
                   src={manager.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(manager.name)}&background=2a5298&color=fff&size=200`}
                   alt={manager.name}
                   className="manager-photo"
@@ -413,6 +440,28 @@ const ManageProjectManagers = ({ onUpdate }) => {
 
       {projectManagers.length === 0 && (
         <p className="empty-state">No Project Managers found. Add one to get started.</p>
+      )}
+
+      {deleteConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Confirm Delete</h3>
+            </div>
+            <div style={{ padding: '1.5rem' }}>
+              <p>Are you sure you want to delete this Project Manager?</p>
+              <p style={{ color: '#dc3545', fontWeight: 'bold', marginTop: '1rem' }}>This action cannot be undone.</p>
+            </div>
+            <div className="form-actions">
+              <button className="btn-danger" onClick={confirmDelete}>
+                Delete
+              </button>
+              <button className="btn-secondary" onClick={cancelDelete}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

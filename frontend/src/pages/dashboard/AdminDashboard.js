@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  getAreaManagers, 
-  getProjectManagers, 
-  getSocialWorkers, 
+import {
+  getAreaManagers,
+  getProjectManagers,
+  getSocialWorkers,
   getProjects,
   getBlogPosts,
   initializeData
@@ -12,6 +12,7 @@ import ManageAreaManagers from '../../components/admin/ManageAreaManagers';
 import ManageProjectManagers from '../../components/admin/ManageProjectManagers';
 import ManageSocialWorkers from '../../components/admin/ManageSocialWorkers';
 import ManageAssignments from '../../components/admin/ManageAssignments';
+import ManageBoardMembers from '../../components/admin/ManageBoardMembers';
 import BlogManagement from '../../components/admin/BlogManagement';
 import ProfileModal from '../../components/ProfileModal';
 import ConnectionError from '../../components/ConnectionError';
@@ -47,7 +48,7 @@ const AdminDashboard = () => {
         getProjects({}),
         getBlogPosts()
       ]);
-      
+
       setStats({
         areaManagers: areas.length,
         projectManagers: projects.length,
@@ -79,7 +80,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="dashboard-section" style={{ marginBottom: '1rem', display: 'flex', gap: '1rem' }}>
-          <button 
+          <button
             className="btn-primary"
             onClick={() => setShowProfile(true)}
           >
@@ -99,52 +100,58 @@ const AdminDashboard = () => {
         )}
 
         <div className="dashboard-tabs">
-          <button 
-            className={activeTab === 'overview' ? 'active' : ''} 
+          <button
+            className={activeTab === 'overview' ? 'active' : ''}
             onClick={() => setActiveTab('overview')}
           >
             Overview
           </button>
-          <button 
-            className={activeTab === 'area-managers' ? 'active' : ''} 
+          <button
+            className={activeTab === 'area-managers' ? 'active' : ''}
             onClick={() => setActiveTab('area-managers')}
           >
             Area Managers
           </button>
-          <button 
-            className={activeTab === 'project-managers' ? 'active' : ''} 
+          <button
+            className={activeTab === 'project-managers' ? 'active' : ''}
             onClick={() => setActiveTab('project-managers')}
           >
             Project Managers
           </button>
-          <button 
-            className={activeTab === 'social-workers' ? 'active' : ''} 
+          <button
+            className={activeTab === 'social-workers' ? 'active' : ''}
             onClick={() => setActiveTab('social-workers')}
           >
             Social Workers
           </button>
-          <button 
-            className={activeTab === 'assignments' ? 'active' : ''} 
+          <button
+            className={activeTab === 'assignments' ? 'active' : ''}
             onClick={() => setActiveTab('assignments')}
           >
             Assignments
           </button>
-          <button 
-            className={activeTab === 'blog' ? 'active' : ''} 
+          <button
+            className={activeTab === 'blog' ? 'active' : ''}
             onClick={() => setActiveTab('blog')}
           >
             Blog Management
+          </button>
+          <button
+            className={activeTab === 'board-members' ? 'active' : ''}
+            onClick={() => setActiveTab('board-members')}
+          >
+            Board Members
           </button>
         </div>
 
         <div className="dashboard-content">
           {connectionError && (
-            <ConnectionError 
-              message={connectionError} 
+            <ConnectionError
+              message={connectionError}
               onRetry={loadStats}
             />
           )}
-          
+
           {activeTab === 'overview' && (
             <>
               <div className="dashboard-section">
@@ -211,6 +218,10 @@ const AdminDashboard = () => {
                     <h3>Manage Blog</h3>
                     <p>Create and edit blog posts</p>
                   </div>
+                  <div className="action-card" onClick={() => setActiveTab('board-members')}>
+                    <h3>Manage Board</h3>
+                    <p>Add and edit board members</p>
+                  </div>
                 </div>
               </div>
             </>
@@ -243,6 +254,12 @@ const AdminDashboard = () => {
           {activeTab === 'blog' && (
             <div className="dashboard-section">
               <BlogManagement onUpdate={loadStats} />
+            </div>
+          )}
+
+          {activeTab === 'board-members' && (
+            <div className="dashboard-section">
+              <ManageBoardMembers onUpdate={loadStats} />
             </div>
           )}
         </div>

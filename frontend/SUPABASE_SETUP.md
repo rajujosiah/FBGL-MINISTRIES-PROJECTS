@@ -113,6 +113,11 @@ CREATE POLICY "Public read access for area_managers" ON area_managers FOR SELECT
 CREATE POLICY "Public read access for project_managers" ON project_managers FOR SELECT USING (true);
 CREATE POLICY "Public read access for social_workers" ON social_workers FOR SELECT USING (true);
 CREATE POLICY "Public read access for projects" ON projects FOR SELECT USING (true);
+
+-- Add password column to tables (Run this if tables already exist)
+ALTER TABLE area_managers ADD COLUMN IF NOT EXISTS password VARCHAR(255);
+ALTER TABLE project_managers ADD COLUMN IF NOT EXISTS password VARCHAR(255);
+ALTER TABLE social_workers ADD COLUMN IF NOT EXISTS password VARCHAR(255);
 ```
 
 ## Sample Data

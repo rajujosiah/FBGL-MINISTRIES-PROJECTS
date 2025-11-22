@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   getProjectManagers,
-  getSocialWorkers, 
+  getSocialWorkers,
   addSocialWorker,
   updateSocialWorker,
   deleteSocialWorker,
@@ -27,13 +27,16 @@ const ManageSocialWorkers = ({ onUpdate }) => {
     phone: '',
     email: '',
     aadhaar_no: '',
+    aadhaar_no: '',
     bio: '',
+    password: '',
     profile_picture: ''
   });
   const [showIDCard, setShowIDCard] = useState(false);
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -110,37 +113,39 @@ const ManageSocialWorkers = ({ onUpdate }) => {
       if (selectedWorker) {
         await updateSocialWorker(selectedWorker.id, formData);
       } else {
-      // Generate ID No
-      const stateCode = getStateCode(formData.state);
-      const districtCode = getDistrictCode(formData.district);
-      const count = socialWorkers.filter(sw => 
-        sw.state === formData.state && sw.district === formData.district
-      ).length + 1;
-      const id_no = `FBGL${stateCode}${districtCode}S${count.toString().padStart(2, '0')}`;
-      
-      const profilePicture = formData.profile_picture || 
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=3d7aa8&color=fff&size=200`;
-      
-      await addSocialWorker({
-        ...formData,
-        id_no,
-        profile_picture: profilePicture,
-        project_manager_id: formData.project_manager_id ? parseInt(formData.project_manager_id) : null
+        // Generate ID No
+        const stateCode = getStateCode(formData.state);
+        const districtCode = getDistrictCode(formData.district);
+        const count = socialWorkers.filter(sw =>
+          sw.state === formData.state && sw.district === formData.district
+        ).length + 1;
+        const id_no = `FBGL${stateCode}${districtCode}S${count.toString().padStart(2, '0')}`;
+
+        const profilePicture = formData.profile_picture ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=3d7aa8&color=fff&size=200`;
+
+        await addSocialWorker({
+          ...formData,
+          id_no,
+          profile_picture: profilePicture,
+          project_manager_id: formData.project_manager_id ? parseInt(formData.project_manager_id) : null
+        });
+      }
+      setShowForm(false);
+      setFormData({
+        name: '',
+        project_manager_id: '',
+        state: '',
+        district: '',
+        address: '',
+        phone: '',
+        email: '',
+        aadhaar_no: '',
+        aadhaar_no: '',
+        bio: '',
+        password: '',
+        profile_picture: ''
       });
-    }
-    setShowForm(false);
-    setFormData({ 
-      name: '', 
-      project_manager_id: '', 
-      state: '', 
-      district: '', 
-      address: '', 
-      phone: '', 
-      email: '', 
-      aadhaar_no: '', 
-      bio: '', 
-      profile_picture: '' 
-    });
       setSelectedWorker(null);
       setAvailableDistricts([]);
       await loadData();
@@ -166,6 +171,7 @@ const ManageSocialWorkers = ({ onUpdate }) => {
       email: worker.email || '',
       aadhaar_no: worker.aadhaar_no || '',
       bio: worker.bio || '',
+      password: worker.password || '',
       profile_picture: worker.profile_picture || ''
     });
     if (worker.state) {
@@ -175,20 +181,31 @@ const ManageSocialWorkers = ({ onUpdate }) => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this Social Worker?')) {
-      try {
-        setConnectionError(null);
-        await deleteSocialWorker(id);
-        await loadData();
-        onUpdate?.();
-      } catch (error) {
-        if (error instanceof DataConnectionError) {
-          setConnectionError(error.message);
-        } else {
-          setConnectionError('Failed to delete social worker. Please check your internet connection.');
-        }
+    setDeleteConfirm(id);
+  };
+
+  const confirmDelete = async () => {
+    const id = deleteConfirm;
+    setDeleteConfirm(null);
+
+    try {
+      setConnectionError(null);
+      await deleteSocialWorker(id);
+      alert('Social Worker deleted successfully!');
+      await loadData();
+      onUpdate?.();
+    } catch (error) {
+      if (error instanceof DataConnectionError) {
+        setConnectionError(error.message);
+      } else {
+        alert(`Failed to delete social worker: ${error.message || 'Unknown error'}`);
+        setConnectionError('Failed to delete social worker. Please check your internet connection.');
       }
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm(null);
   };
 
   const handleViewIDCard = (worker) => {
@@ -199,12 +216,12 @@ const ManageSocialWorkers = ({ onUpdate }) => {
   return (
     <div className="manage-section">
       {connectionError && (
-        <ConnectionError 
-          message={connectionError} 
+        <ConnectionError
+          message={connectionError}
           onRetry={loadData}
         />
       )}
-      
+
       <div className="section-header">
         <div>
           <h2>Manage Social Workers</h2>
@@ -334,6 +351,16 @@ const ManageSocialWorkers = ({ onUpdate }) => {
                 </div>
               </div>
               <div className="form-group">
+                <label>Password {selectedWorker ? '(Leave blank to keep current)' : '*'}</label>
+                <input
+                  type="text"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder={selectedWorker ? "Enter new password to change" : "Enter password for login"}
+                  required={!selectedWorker}
+                />
+              </div>
+              <div className="form-group">
                 <label>Bio</label>
                 <textarea
                   value={formData.bio}
@@ -370,7 +397,7 @@ const ManageSocialWorkers = ({ onUpdate }) => {
           return (
             <div key={worker.id} className="manager-card">
               <div className="manager-header">
-                <img 
+                <img
                   src={worker.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(worker.name)}&background=3d7aa8&color=fff&size=200`}
                   alt={worker.name}
                   className="manager-photo"
@@ -413,6 +440,28 @@ const ManageSocialWorkers = ({ onUpdate }) => {
 
       {socialWorkers.length === 0 && (
         <p className="empty-state">No Social Workers found. Add one to get started.</p>
+      )}
+
+      {deleteConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Confirm Delete</h3>
+            </div>
+            <div style={{ padding: '1.5rem' }}>
+              <p>Are you sure you want to delete this Social Worker?</p>
+              <p style={{ color: '#dc3545', fontWeight: 'bold', marginTop: '1rem' }}>This action cannot be undone.</p>
+            </div>
+            <div className="form-actions">
+              <button className="btn-danger" onClick={confirmDelete}>
+                Delete
+              </button>
+              <button className="btn-secondary" onClick={cancelDelete}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

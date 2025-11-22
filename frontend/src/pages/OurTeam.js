@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { getAreaManagers, getProjectManagers, getSocialWorkers, getBoardMembers, getProfileById, getProfileByIdNo, getProjects } from '../utils/supabase';
-import { sampleAreaManagers, sampleProjectManagers, sampleSocialWorkers, sampleBoardMembers, sampleProjects } from '../utils/sampleData';
+import { getAreaManagers, getProjectManagers, getSocialWorkers, getProfileById, getProfileByIdNo, getProjects } from '../utils/supabase';
+import { getBoardMembers } from '../utils/dataManager';
+
 import IDCard from '../components/IDCard';
 import html2canvas from 'html2canvas';
 import { IoMdCard, IoMdMap, IoMdPeople } from 'react-icons/io';
@@ -13,11 +14,7 @@ const normalizeIdNo = (idNo) => {
   return idNo.replace(/\s+/g, '').toUpperCase();
 };
 
-// Helper function to find profile by id_no in sample data
-const findProfileByIdNo = (profiles, idNo) => {
-  const normalized = normalizeIdNo(idNo);
-  return profiles.find(p => normalizeIdNo(p.id_no) === normalized);
-};
+
 
 const OurTeam = () => {
   const navigate = useNavigate();
@@ -32,10 +29,10 @@ const OurTeam = () => {
   const [selectedSocialWorker, setSelectedSocialWorker] = useState(null);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [useSampleData, setUseSampleData] = useState(false);
   const [showIDCard, setShowIDCard] = useState(false);
   const [idCardUser, setIdCardUser] = useState(null);
   const [idCardRole, setIdCardRole] = useState(null);
+  const [selectedBoardMember, setSelectedBoardMember] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -72,18 +69,9 @@ const OurTeam = () => {
       if (am && bm) {
         setAreaManagers(am);
         setBoardMembers(bm);
-        setUseSampleData(false);
-      } else {
-        // Use sample data as fallback
-        setAreaManagers(sampleAreaManagers);
-        setBoardMembers(sampleBoardMembers);
-        setUseSampleData(true);
       }
     } catch (error) {
       console.error('Error loading data:', error);
-      setAreaManagers(sampleAreaManagers);
-      setBoardMembers(sampleBoardMembers);
-      setUseSampleData(true);
     } finally {
       setLoading(false);
     }
@@ -92,52 +80,38 @@ const OurTeam = () => {
   const handleAreaManagerClick = async (managerIdOrIdNo) => {
     setLoading(true);
     try {
-      const profile = useSampleData 
-        ? findProfileByIdNo(sampleAreaManagers, managerIdOrIdNo) || sampleAreaManagers.find(m => m.id === parseInt(managerIdOrIdNo))
-        : await getProfileByIdNo('area_manager', managerIdOrIdNo) || await getProfileById('area_manager', parseInt(managerIdOrIdNo));
-      
+      const profile = await getProfileByIdNo('area_manager', managerIdOrIdNo) || await getProfileById('area_manager', parseInt(managerIdOrIdNo));
+
       if (!profile) {
         console.error('Area manager not found');
         navigate('/team');
         return;
       }
-      
+
       setSelectedAreaManager(profile);
-      
+
       // Load project managers for this area manager
-      const pms = useSampleData
-        ? sampleProjectManagers.filter(pm => pm.area_manager_id === profile.id)
-        : await getProjectManagers(profile.id);
-      
+      const pms = await getProjectManagers(profile.id);
+
       setProjectManagers(pms || []);
-      
-      // Load all social workers and projects for accurate project count
-      if (useSampleData) {
-        const pmIds = (pms || []).map(pm => pm.id);
-        const sws = sampleSocialWorkers.filter(sw => pmIds.includes(sw.project_manager_id));
-        setSocialWorkers(sws);
-        const workerIds = sws.map(sw => sw.id);
-        const allProjects = sampleProjects.filter(p => workerIds.includes(p.social_worker_id));
-        setProjects(allProjects);
-      } else {
-        // Load all projects for counting
-        const allProjects = await getProjects({});
-        setProjects(allProjects || []);
-        // Load social workers for all project managers
-        const allSws = [];
-        for (const pm of (pms || [])) {
-          const sws = await getSocialWorkers(pm.id);
-          if (sws) allSws.push(...sws);
-        }
-        setSocialWorkers(allSws);
+
+      // Load all projects for counting
+      const allProjects = await getProjects({});
+      setProjects(allProjects || []);
+      // Load social workers for all project managers
+      const allSws = [];
+      for (const pm of (pms || [])) {
+        const sws = await getSocialWorkers(pm.id);
+        if (sws) allSws.push(...sws);
       }
-      
+      setSocialWorkers(allSws);
+
       setSelectedProjectManager(null);
       setSelectedSocialWorker(null);
       setActiveTab('area_manager');
       const idNo = normalizeIdNo(profile.id_no);
       navigate(`/team/area_manager/${encodeURIComponent(idNo)}`);
-      
+
       // Smooth scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -154,35 +128,24 @@ const OurTeam = () => {
     } else {
       setLoading(true);
       try {
-        const profile = useSampleData
-          ? findProfileByIdNo(sampleProjectManagers, managerIdOrIdNo) || sampleProjectManagers.find(pm => pm.id === parseInt(managerIdOrIdNo))
-          : await getProfileByIdNo('project_manager', managerIdOrIdNo) || await getProfileById('project_manager', parseInt(managerIdOrIdNo));
-        
+        const profile = await getProfileByIdNo('project_manager', managerIdOrIdNo) || await getProfileById('project_manager', parseInt(managerIdOrIdNo));
+
         if (!profile) {
           console.error('Project manager not found');
           return;
         }
-        
+
         setSelectedProjectManager(profile);
-        
+
         // Load social workers for this project manager
-        const sws = useSampleData
-          ? sampleSocialWorkers.filter(sw => sw.project_manager_id === profile.id)
-          : await getSocialWorkers(profile.id);
-        
+        const sws = await getSocialWorkers(profile.id);
+
         setSocialWorkers(sws || []);
-        
+
         // Load all projects for accurate project count
-        if (useSampleData) {
-          const workerIds = (sws || []).map(sw => sw.id);
-          const allProjects = sampleProjects.filter(p => workerIds.includes(p.social_worker_id));
-          setProjects(allProjects);
-        } else {
-          // Load all projects for counting
-          const allProjects = await getProjects({});
-          setProjects(allProjects || []);
-        }
-        
+        const allProjects = await getProjects({});
+        setProjects(allProjects || []);
+
         setSelectedSocialWorker(null);
         setActiveTab('project_manager');
         const idNo = normalizeIdNo(profile.id_no);
@@ -198,59 +161,44 @@ const OurTeam = () => {
   const handleProjectManagerClickWithParent = async (managerIdOrIdNo) => {
     setLoading(true);
     try {
-      const profile = useSampleData
-        ? findProfileByIdNo(sampleProjectManagers, managerIdOrIdNo) || sampleProjectManagers.find(pm => pm.id === parseInt(managerIdOrIdNo))
-        : await getProfileByIdNo('project_manager', managerIdOrIdNo) || await getProfileById('project_manager', parseInt(managerIdOrIdNo));
-      
+      const profile = await getProfileByIdNo('project_manager', managerIdOrIdNo) || await getProfileById('project_manager', parseInt(managerIdOrIdNo));
+
       if (!profile) {
         console.error('Project manager not found');
         navigate('/team');
         return;
       }
-      
+
       setSelectedProjectManager(profile);
-      
+
       // Load parent area manager
       const areaManagerId = profile.area_manager_id;
       if (areaManagerId) {
-        const areaManager = useSampleData
-          ? sampleAreaManagers.find(am => am.id === areaManagerId)
-          : await getProfileById('area_manager', areaManagerId);
-        
+        const areaManager = await getProfileById('area_manager', areaManagerId);
+
         if (areaManager) {
           setSelectedAreaManager(areaManager);
           profile.reporting_to = areaManager.name;
           // Load all project managers for this area manager
-          const pms = useSampleData
-            ? sampleProjectManagers.filter(pm => pm.area_manager_id === areaManagerId)
-            : await getProjectManagers(areaManagerId);
+          const pms = await getProjectManagers(areaManagerId);
           setProjectManagers(pms || []);
         }
       }
-      
+
       // Load social workers for this project manager
-      const sws = useSampleData
-        ? sampleSocialWorkers.filter(sw => sw.project_manager_id === profile.id)
-        : await getSocialWorkers(profile.id);
-      
+      const sws = await getSocialWorkers(profile.id);
+
       setSocialWorkers(sws || []);
-      
+
       // Load all projects for accurate project count
-      if (useSampleData) {
-        const workerIds = (sws || []).map(sw => sw.id);
-        const allProjects = sampleProjects.filter(p => workerIds.includes(p.social_worker_id));
-        setProjects(allProjects);
-      } else {
-        // Load all projects for counting
-        const allProjects = await getProjects({});
-        setProjects(allProjects || []);
-      }
-      
+      const allProjects = await getProjects({});
+      setProjects(allProjects || []);
+
       setSelectedSocialWorker(null);
       setActiveTab('project_manager');
       const idNo = normalizeIdNo(profile.id_no);
       navigate(`/team/project_manager/${encodeURIComponent(idNo)}`);
-      
+
       // Smooth scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -260,68 +208,56 @@ const OurTeam = () => {
       setLoading(false);
     }
   };
-  
+
   const handleSocialWorkerClickWithParents = async (workerIdOrIdNo) => {
     setLoading(true);
     try {
-      const profile = useSampleData
-        ? findProfileByIdNo(sampleSocialWorkers, workerIdOrIdNo) || sampleSocialWorkers.find(sw => sw.id === parseInt(workerIdOrIdNo))
-        : await getProfileByIdNo('social_worker', workerIdOrIdNo) || await getProfileById('social_worker', parseInt(workerIdOrIdNo));
-      
+      const profile = await getProfileByIdNo('social_worker', workerIdOrIdNo) || await getProfileById('social_worker', parseInt(workerIdOrIdNo));
+
       if (!profile) {
         console.error('Social worker not found');
         navigate('/team');
         return;
       }
-      
+
       // Load parent project manager
       const projectManagerId = profile.project_manager_id;
       if (projectManagerId) {
-        const projectManager = useSampleData
-          ? sampleProjectManagers.find(pm => pm.id === projectManagerId)
-          : await getProfileById('project_manager', projectManagerId);
-        
+        const projectManager = await getProfileById('project_manager', projectManagerId);
+
         if (projectManager) {
           setSelectedProjectManager(projectManager);
           profile.reporting_to = projectManager.name;
-          
+
           // Load parent area manager
           const areaManagerId = projectManager.area_manager_id;
           if (areaManagerId) {
-            const areaManager = useSampleData
-              ? sampleAreaManagers.find(am => am.id === areaManagerId)
-              : await getProfileById('area_manager', areaManagerId);
-            
+            const areaManager = await getProfileById('area_manager', areaManagerId);
+
             if (areaManager) {
               setSelectedAreaManager(areaManager);
               // Load all project managers for this area manager
-              const pms = useSampleData
-                ? sampleProjectManagers.filter(pm => pm.area_manager_id === areaManagerId)
-                : await getProjectManagers(areaManagerId);
+              const pms = await getProjectManagers(areaManagerId);
               setProjectManagers(pms || []);
             }
           }
-          
+
           // Load all social workers for this project manager
-          const sws = useSampleData
-            ? sampleSocialWorkers.filter(sw => sw.project_manager_id === projectManagerId)
-            : await getSocialWorkers(projectManagerId);
+          const sws = await getSocialWorkers(projectManagerId);
           setSocialWorkers(sws || []);
         }
       }
-      
+
       setSelectedSocialWorker(profile);
-      
+
       // Load projects for this social worker
-      const proj = useSampleData
-        ? sampleProjects.filter(p => p.social_worker_id === profile.id)
-        : await getProjects(profile.id);
-      
+      const proj = await getProjects({ socialWorkerId: profile.id });
+
       setProjects(proj || []);
       setActiveTab('social_worker');
       const idNo = normalizeIdNo(profile.id_no);
       navigate(`/team/social_worker/${encodeURIComponent(idNo)}`);
-      
+
       // Smooth scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -339,32 +275,28 @@ const OurTeam = () => {
     } else {
       setLoading(true);
       try {
-        const profile = useSampleData
-          ? findProfileByIdNo(sampleSocialWorkers, workerIdOrIdNo) || sampleSocialWorkers.find(sw => sw.id === parseInt(workerIdOrIdNo))
-          : await getProfileByIdNo('social_worker', workerIdOrIdNo) || await getProfileById('social_worker', parseInt(workerIdOrIdNo));
-        
+        const profile = await getProfileByIdNo('social_worker', workerIdOrIdNo) || await getProfileById('social_worker', parseInt(workerIdOrIdNo));
+
         if (!profile) {
           console.error('Social worker not found');
           return;
         }
-        
+
         // If we have a project manager selected, include their info
         if (selectedProjectManager) {
           profile.reporting_to = selectedProjectManager.name;
         }
-        
+
         setSelectedSocialWorker(profile);
-        
+
         // Load projects for this social worker
-        const proj = useSampleData
-          ? sampleProjects.filter(p => p.social_worker_id === profile.id)
-          : await getProjects({ socialWorkerId: profile.id });
-        
+        const proj = await getProjects({ socialWorkerId: profile.id });
+
         setProjects(proj || []);
         setActiveTab('social_worker');
         const idNo = normalizeIdNo(profile.id_no);
         navigate(`/team/social_worker/${encodeURIComponent(idNo)}`);
-        
+
         // Smooth scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (error) {
@@ -378,12 +310,12 @@ const OurTeam = () => {
   const handleViewProfile = async (profileType, profileIdOrIdNo) => {
     // Decode URL component if needed
     const decodedId = decodeURIComponent(profileIdOrIdNo);
-    
+
     // Wait for initial data to load if not already loaded
-    if (areaManagers.length === 0 && !useSampleData) {
+    if (areaManagers.length === 0) {
       await loadData();
     }
-    
+
     if (profileType === 'area_manager') {
       await handleAreaManagerClick(decodedId);
     } else if (profileType === 'project_manager') {
@@ -415,6 +347,10 @@ const OurTeam = () => {
     }
   };
 
+  const handleBoardMemberClick = (member) => {
+    setSelectedBoardMember(member);
+  };
+
   const renderProfileCard = (person, onClick) => {
     // Generate a deterministic portrait ID based on name hash
     const getPortraitId = (name) => {
@@ -425,14 +361,14 @@ const OurTeam = () => {
       }
       return Math.abs(hash) % 99;
     };
-    const isFemale = person.name.toLowerCase().includes('mrs.') || 
-                     person.name.toLowerCase().includes('sarah') || 
-                     person.name.toLowerCase().includes('jane') || 
-                     person.name.toLowerCase().includes('mary') || 
-                     person.name.toLowerCase().includes('emma') || 
-                     person.name.toLowerCase().includes('lisa');
+    const isFemale = person.name.toLowerCase().includes('mrs.') ||
+      person.name.toLowerCase().includes('sarah') ||
+      person.name.toLowerCase().includes('jane') ||
+      person.name.toLowerCase().includes('mary') ||
+      person.name.toLowerCase().includes('emma') ||
+      person.name.toLowerCase().includes('lisa');
     const profilePic = person.profile_picture || `https://randomuser.me/api/portraits/${isFemale ? 'women' : 'men'}/${getPortraitId(person.name)}.jpg`;
-    
+
     // Use id_no for navigation
     const handleClick = () => {
       if (onClick) {
@@ -440,7 +376,7 @@ const OurTeam = () => {
         onClick(idNo);
       }
     };
-    
+
     return (
       <div key={person.id} className="profile-card" onClick={handleClick}>
         <div className="profile-photo">
@@ -470,17 +406,17 @@ const OurTeam = () => {
       }
       return Math.abs(hash) % 99;
     };
-    const isFemale = profile.name.toLowerCase().includes('mrs.') || 
-                     profile.name.toLowerCase().includes('sarah') || 
-                     profile.name.toLowerCase().includes('jane') || 
-                     profile.name.toLowerCase().includes('mary') || 
-                     profile.name.toLowerCase().includes('emma') || 
-                     profile.name.toLowerCase().includes('lisa');
+    const isFemale = profile.name.toLowerCase().includes('mrs.') ||
+      profile.name.toLowerCase().includes('sarah') ||
+      profile.name.toLowerCase().includes('jane') ||
+      profile.name.toLowerCase().includes('mary') ||
+      profile.name.toLowerCase().includes('emma') ||
+      profile.name.toLowerCase().includes('lisa');
     const profilePic = profile.profile_picture || `https://randomuser.me/api/portraits/${isFemale ? 'women' : 'men'}/${getPortraitId(profile.name)}.jpg`;
-    
+
     // Get role title based on profile type
     const getRoleTitle = () => {
-      switch(profileType) {
+      switch (profileType) {
         case 'area_manager':
           return 'Area Manager';
         case 'project_manager':
@@ -542,12 +478,12 @@ const OurTeam = () => {
       }
       return '';
     };
-    
+
     return (
       <div className="profile-detail">
         <div className="profile-detail-header">
           <button className="back-button" onClick={handleBack}>← Back</button>
-          <button 
+          <button
             className="id-card-button"
             onClick={(e) => {
               e.stopPropagation();
@@ -624,9 +560,41 @@ const OurTeam = () => {
           </div>
         </div>
       )}
+
+      {selectedBoardMember && (
+        <div className="modal-overlay" onClick={() => setSelectedBoardMember(null)}>
+          <div className="modal-content board-member-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Board Member Details</h3>
+              <button className="close-btn" onClick={() => setSelectedBoardMember(null)}>×</button>
+            </div>
+            <div className="board-member-detail">
+              <div className="board-member-photo-large">
+                {selectedBoardMember.profile_picture ? (
+                  <img src={selectedBoardMember.profile_picture} alt={selectedBoardMember.name} />
+                ) : (
+                  <div className="placeholder-photo-large">
+                    {selectedBoardMember.name.charAt(0)}
+                  </div>
+                )}
+              </div>
+              <div className="board-member-info-large">
+                <h2>{selectedBoardMember.name}</h2>
+                <p className="board-role-large">{selectedBoardMember.position}</p>
+                {selectedBoardMember.bio && (
+                  <div className="board-bio-scroll">
+                    <p>{selectedBoardMember.bio}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container">
         <h1>Our Team</h1>
-        
+
         {/* Show profile detail if viewing one */}
         {selectedSocialWorker && (
           <div className="profile-side-layout">
@@ -642,9 +610,9 @@ const OurTeam = () => {
                       <div key={project.id} className="project-card">
                         <div className="project-image">
                           {project.images && project.images.length > 0 ? (
-                            <img 
-                              src={project.images[0] || 'https://via.placeholder.com/400x250?text=' + project.title} 
-                              alt={project.title} 
+                            <img
+                              src={project.images[0] || 'https://via.placeholder.com/400x250?text=' + project.title}
+                              alt={project.title}
                             />
                           ) : (
                             <div className="placeholder-image">
@@ -704,9 +672,9 @@ const OurTeam = () => {
               <div className="team-section">
                 <h2>Social Workers <span className="count-badge-header">(Total: {socialWorkers.length})</span></h2>
                 {socialWorkers.length > 0 ? (
-                <div className="profiles-grid-compact">
-                  {socialWorkers.map(sw => renderProfileCard(sw, (idNo) => handleSocialWorkerClick(idNo)))}
-                </div>
+                  <div className="profiles-grid-compact">
+                    {socialWorkers.map(sw => renderProfileCard(sw, (idNo) => handleSocialWorkerClick(idNo)))}
+                  </div>
                 ) : (
                   <div className="no-items">
                     <p>No social workers assigned to this project manager yet.</p>
@@ -738,14 +706,14 @@ const OurTeam = () => {
         {!selectedAreaManager && !selectedProjectManager && !selectedSocialWorker && (
           <>
             <div className="team-tabs">
-              <button 
-                className={activeTab === 'board' ? 'active' : ''} 
+              <button
+                className={activeTab === 'board' ? 'active' : ''}
                 onClick={() => setActiveTab('board')}
               >
                 Board Members
               </button>
-              <button 
-                className={activeTab === 'area_managers' ? 'active' : ''} 
+              <button
+                className={activeTab === 'area_managers' ? 'active' : ''}
                 onClick={() => setActiveTab('area_managers')}
               >
                 Area Managers
@@ -756,7 +724,7 @@ const OurTeam = () => {
               <div className="team-section">
                 <h2>Board Members</h2>
                 <div className="profiles-grid">
-                  {boardMembers.map(bm => renderProfileCard(bm, null))}
+                  {boardMembers.map(bm => renderProfileCard(bm, () => handleBoardMemberClick(bm)))}
                 </div>
               </div>
             )}
@@ -777,4 +745,3 @@ const OurTeam = () => {
 };
 
 export default OurTeam;
-

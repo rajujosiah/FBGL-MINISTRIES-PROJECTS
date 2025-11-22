@@ -9,14 +9,23 @@ const Blog = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    initializeData();
-    const posts = getBlogPosts();
-    // Sort by date, newest first
-    const sortedPosts = posts.sort((a, b) => 
-      new Date(b.created_at) - new Date(a.created_at)
-    );
-    setBlogPosts(sortedPosts);
-    setLoading(false);
+    const loadPosts = async () => {
+      try {
+        await initializeData();
+        const posts = await getBlogPosts();
+        // Sort by date, newest first
+        const sortedPosts = (posts || []).sort((a, b) =>
+          new Date(b.created_at) - new Date(a.created_at)
+        );
+        setBlogPosts(sortedPosts);
+      } catch (error) {
+        console.error('Error loading blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPosts();
   }, []);
 
   if (loading) {
@@ -40,8 +49,8 @@ const Blog = () => {
         {blogPosts.length > 0 ? (
           <div className="blog-posts-container">
             {blogPosts.map(post => (
-              <article 
-                key={post.id} 
+              <article
+                key={post.id}
                 className="blog-post-full"
                 onClick={() => navigate(`/blog/${post.id}`)}
               >

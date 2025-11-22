@@ -230,6 +230,11 @@ export const updateProjectManager = async (id, updates) => {
       delete updatesToApply.password;
     }
 
+    // Convert empty strings to null for numeric fields
+    if (updatesToApply.area_manager_id === '' || updatesToApply.area_manager_id === undefined) {
+      updatesToApply.area_manager_id = null;
+    }
+
     const { data, error } = await supabase
       .from('project_managers')
       .update(updatesToApply)
@@ -378,6 +383,11 @@ export const updateSocialWorker = async (id, updates) => {
     const updatesToApply = { ...updates };
     if (!updatesToApply.password) {
       delete updatesToApply.password;
+    }
+
+    // Convert empty strings to null for numeric fields
+    if (updatesToApply.project_manager_id === '' || updatesToApply.project_manager_id === undefined) {
+      updatesToApply.project_manager_id = null;
     }
 
     const { data, error } = await supabase

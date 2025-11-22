@@ -162,12 +162,19 @@ const ManageAssignments = ({ onUpdate }) => {
 
     return projectManagers.filter(pm => {
       // Only show unassigned PMs
-      if (pm.area_manager_id) return false;
+      // Check for various "empty" values
+      if (pm.area_manager_id && pm.area_manager_id !== '0' && pm.area_manager_id !== '') return false;
 
       // Check if there's an Area Manager with matching State AND District
-      const hasMatchingAM = areaManagers.some(am =>
-        am.state === pm.state && am.district === pm.district
-      );
+      // Use trim() and toLowerCase() for safer comparison
+      const hasMatchingAM = areaManagers.some(am => {
+        const amState = (am.state || '').trim().toLowerCase();
+        const amDistrict = (am.district || '').trim().toLowerCase();
+        const pmState = (pm.state || '').trim().toLowerCase();
+        const pmDistrict = (pm.district || '').trim().toLowerCase();
+
+        return amState === pmState && amDistrict === pmDistrict;
+      });
 
       // Return true if NO matching Area Manager found
       return !hasMatchingAM;
@@ -180,12 +187,19 @@ const ManageAssignments = ({ onUpdate }) => {
 
     return socialWorkers.filter(sw => {
       // Only show unassigned SWs
-      if (sw.project_manager_id) return false;
+      // Check for various "empty" values
+      if (sw.project_manager_id && sw.project_manager_id !== '0' && sw.project_manager_id !== '') return false;
 
       // Check if there's a Project Manager with matching State AND District
-      const hasMatchingPM = projectManagers.some(pm =>
-        pm.state === sw.state && pm.district === sw.district
-      );
+      // Use trim() and toLowerCase() for safer comparison
+      const hasMatchingPM = projectManagers.some(pm => {
+        const pmState = (pm.state || '').trim().toLowerCase();
+        const pmDistrict = (pm.district || '').trim().toLowerCase();
+        const swState = (sw.state || '').trim().toLowerCase();
+        const swDistrict = (sw.district || '').trim().toLowerCase();
+
+        return pmState === swState && pmDistrict === swDistrict;
+      });
 
       // Return true if NO matching Project Manager found
       return !hasMatchingPM;
@@ -397,7 +411,36 @@ const ManageAssignments = ({ onUpdate }) => {
                       <span className="unmatched-name">{pm.name} ({pm.id_no})</span>
                       <span className="unmatched-location">📍 {pm.state} - {pm.district}</span>
                     </div>
-                    <span className="unmatched-badge">No Matching Area Manager</span>
+                    <div className="unmatched-actions">
+                      <span className="unmatched-badge">No Matching Area Manager</span>
+                      <select
+                        className="unmatched-select"
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleAssignProjectManager(pm.id, parseInt(e.target.value));
+                            e.target.value = '';
+                          }
+                        }}
+                        defaultValue=""
+                      >
+                        <option value="" disabled>Assign to Any Area Manager</option>
+                        {areaManagers.map(am => (
+                          <option key={am.id} value={am.id}>
+                            {am.name} ({am.state} - {am.district})
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        className="btn-small btn-warning"
+                        onClick={() => {
+                          alert(`To create an Area Manager for ${pm.state} - ${pm.district}:\n\n1. Go to "Manage Area Managers" section\n2. Click "+ Add Area Manager"\n3. Fill in details with State: ${pm.state}, District: ${pm.district}\n4. Save and return here to assign`);
+                          window.location.href = '#manage-area-managers';
+                        }}
+                        title="Go to Area Managers section to create one"
+                      >
+                        Create Area Manager
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -539,7 +582,36 @@ const ManageAssignments = ({ onUpdate }) => {
                       <span className="unmatched-name">{sw.name} ({sw.id_no})</span>
                       <span className="unmatched-location">📍 {sw.state} - {sw.district}</span>
                     </div>
-                    <span className="unmatched-badge">No Matching Project Manager</span>
+                    <div className="unmatched-actions">
+                      <span className="unmatched-badge">No Matching Project Manager</span>
+                      <select
+                        className="unmatched-select"
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleAssignSocialWorker(sw.id, parseInt(e.target.value));
+                            e.target.value = '';
+                          }
+                        }}
+                        defaultValue=""
+                      >
+                        <option value="" disabled>Assign to Any Project Manager</option>
+                        {projectManagers.map(pm => (
+                          <option key={pm.id} value={pm.id}>
+                            {pm.name} ({pm.state} - {pm.district})
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        className="btn-small btn-warning"
+                        onClick={() => {
+                          alert(`To create a Project Manager for ${sw.state} - ${sw.district}:\n\n1. Go to "Manage Project Managers" section\n2. Click "+ Add Project Manager"\n3. Fill in details with State: ${sw.state}, District: ${sw.district}\n4. Save and return here to assign`);
+                          window.location.href = '#manage-project-managers';
+                        }}
+                        title="Go to Project Managers section to create one"
+                      >
+                        Create Project Manager
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

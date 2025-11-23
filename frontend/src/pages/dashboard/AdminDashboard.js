@@ -394,11 +394,18 @@ const AdminDashboard = () => {
             <div className="dashboard-section">
               <div className="section-header">
                 <div>
-                  <h2>Manage Home Page Projects</h2>
+                  <h2>Manage Projects</h2>
                   <p className="section-description">
-                    Select which projects should be displayed on the home page.
+                    Create projects and select which ones should be displayed on the home page.
                   </p>
                 </div>
+                <button
+                  className="btn-primary"
+                  onClick={() => setShowProjectForm(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                >
+                  <IoMdAdd /> Create Project
+                </button>
               </div>
 
               <div className="manage-section">
@@ -455,6 +462,151 @@ const AdminDashboard = () => {
           )}
         </div>
 
+        {/* Create Project Modal */}
+        {showProjectForm && (
+          <div className="modal-overlay">
+            <div className="modal-content" style={{ maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+              <div className="modal-header">
+                <h3>Create New Project</h3>
+                <button className="close-button" onClick={() => setShowProjectForm(false)}>
+                  <IoMdClose />
+                </button>
+              </div>
+              <form onSubmit={handleCreateProject} style={{ padding: '1.5rem' }}>
+                <div className="form-group">
+                  <label>Title *</label>
+                  <input
+                    type="text"
+                    value={newProject.title}
+                    onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Description *</label>
+                  <textarea
+                    value={newProject.description}
+                    onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                    rows="4"
+                    required
+                  />
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Category *</label>
+                    <select
+                      value={newProject.category}
+                      onChange={(e) => setNewProject({ ...newProject, category: e.target.value })}
+                      required
+                    >
+                      <option value="social">Social</option>
+                      <option value="economy">Economy</option>
+                      <option value="education">Education</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Status *</label>
+                    <select
+                      value={newProject.status}
+                      onChange={(e) => setNewProject({ ...newProject, status: e.target.value })}
+                      required
+                    >
+                      <option value="upcoming">Upcoming</option>
+                      <option value="ongoing">Ongoing</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Location</label>
+                  <input
+                    type="text"
+                    value={newProject.location}
+                    onChange={(e) => setNewProject({ ...newProject, location: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Area of Operation</label>
+                  <input
+                    type="text"
+                    value={newProject.area_of_operation}
+                    onChange={(e) => setNewProject({ ...newProject, area_of_operation: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Target Beneficiaries</label>
+                  <input
+                    type="text"
+                    value={newProject.target_beneficiaries}
+                    onChange={(e) => setNewProject({ ...newProject, target_beneficiaries: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Project Manager</label>
+                    <select
+                      value={newProject.project_manager_id}
+                      onChange={(e) => setNewProject({ ...newProject, project_manager_id: e.target.value })}
+                    >
+                      <option value="">Select Project Manager</option>
+                      {projectManagers.map(pm => (
+                        <option key={pm.id} value={pm.id}>{pm.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Social Worker</label>
+                    <select
+                      value={newProject.social_worker_id}
+                      onChange={(e) => setNewProject({ ...newProject, social_worker_id: e.target.value })}
+                    >
+                      <option value="">Select Social Worker</option>
+                      {socialWorkers.map(sw => (
+                        <option key={sw.id} value={sw.id}>{sw.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Project Images</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageUpload}
+                  />
+                  {newProject.images.length > 0 && (
+                    <div style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
+                      {newProject.images.length} image(s) selected
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-actions">
+                  <button type="submit" className="btn-primary">
+                    Create Project
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => setShowProjectForm(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

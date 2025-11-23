@@ -26,12 +26,12 @@ const ManageSocialWorkers = ({ onUpdate }) => {
     address: '',
     phone: '',
     email: '',
-    aadhaar_no: '',
+    password: '',
     aadhaar_no: '',
     bio: '',
-    password: '',
     profile_picture: ''
   });
+  const [generatedPassword, setGeneratedPassword] = useState(null);
   const [showIDCard, setShowIDCard] = useState(false);
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -124,11 +124,17 @@ const ManageSocialWorkers = ({ onUpdate }) => {
         const profilePicture = formData.profile_picture ||
           `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=3d7aa8&color=fff&size=200`;
 
+        // Use provided password or generate one if empty (fallback)
+        const password = formData.password || Math.random().toString(36).slice(-8);
+        setGeneratedPassword(password);
+
+
         await addSocialWorker({
           ...formData,
           id_no,
           profile_picture: profilePicture,
-          project_manager_id: formData.project_manager_id ? parseInt(formData.project_manager_id) : null
+          project_manager_id: formData.project_manager_id ? parseInt(formData.project_manager_id) : null,
+          password: password
         });
       }
       setShowForm(false);
@@ -140,10 +146,9 @@ const ManageSocialWorkers = ({ onUpdate }) => {
         address: '',
         phone: '',
         email: '',
-        aadhaar_no: '',
+        password: '',
         aadhaar_no: '',
         bio: '',
-        password: '',
         profile_picture: ''
       });
       setSelectedWorker(null);
@@ -169,9 +174,9 @@ const ManageSocialWorkers = ({ onUpdate }) => {
       address: worker.address || '',
       phone: worker.phone || '',
       email: worker.email || '',
+      password: '', // Don't populate password on edit
       aadhaar_no: worker.aadhaar_no || '',
       bio: worker.bio || '',
-      password: worker.password || '',
       profile_picture: worker.profile_picture || ''
     });
     if (worker.state) {
@@ -220,6 +225,24 @@ const ManageSocialWorkers = ({ onUpdate }) => {
           message={connectionError}
           onRetry={loadData}
         />
+      )}
+
+      {generatedPassword && (
+        <div className="form-modal">
+          <div className="form-modal-content">
+            <div className="form-modal-header">
+              <h3>Social Worker Created</h3>
+            </div>
+            <div style={{ padding: '1.5rem' }}>
+              <p>The social worker has been created successfully.</p>
+              <p>Please share the following password with the user:</p>
+              <p style={{ fontWeight: 'bold', marginTop: '1rem' }}>{generatedPassword}</p>
+            </div>
+            <div className="form-actions">
+              <button className="btn-primary" onClick={() => setGeneratedPassword(null)}>Close</button>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="section-header">
@@ -341,6 +364,18 @@ const ManageSocialWorkers = ({ onUpdate }) => {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
+                {!selectedWorker && (
+                  <div className="form-group">
+                    <label>Password *</label>
+                    <input
+                      type="text"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder="Enter password"
+                      required
+                    />
+                  </div>
+                )}
                 <div className="form-group">
                   <label>Aadhaar No</label>
                   <input
@@ -349,16 +384,6 @@ const ManageSocialWorkers = ({ onUpdate }) => {
                     onChange={(e) => setFormData({ ...formData, aadhaar_no: e.target.value })}
                   />
                 </div>
-              </div>
-              <div className="form-group">
-                <label>Password {selectedWorker ? '(Leave blank to keep current)' : '*'}</label>
-                <input
-                  type="text"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder={selectedWorker ? "Enter new password to change" : "Enter password for login"}
-                  required={!selectedWorker}
-                />
               </div>
               <div className="form-group">
                 <label>Bio</label>

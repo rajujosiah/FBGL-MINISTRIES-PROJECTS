@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getBlogPosts, initializeData } from '../utils/dataManager';
+import { getBlogPosts, initializeData, getHomePageProjects } from '../utils/dataManager';
 import { IoMdPeople, IoMdBriefcase, IoMdSchool } from 'react-icons/io';
 import './Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
   const [blogPosts, setBlogPosts] = useState([]);
+  const [homeProjects, setHomeProjects] = useState([]);
 
   useEffect(() => {
     const loadBlogPosts = async () => {
@@ -17,7 +18,18 @@ const Home = () => {
         setBlogPosts(posts.slice(-3).reverse());
       }
     };
+
+    const loadHomeProjects = async () => {
+      try {
+        const projects = await getHomePageProjects();
+        setHomeProjects(projects);
+      } catch (error) {
+        console.error('Error loading home projects:', error);
+      }
+    };
+
     loadBlogPosts();
+    loadHomeProjects();
   }, []);
   return (
     <div className="home">
@@ -41,13 +53,13 @@ const Home = () => {
         <div className="container">
           <h2>Welcome Message</h2>
           <p className="welcome-text">
-            Welcome to FIRST BORN GOSPEL LIFE MINISTRIES, a faith-based non-profit organization 
-            dedicated to transforming communities through social development, economic empowerment, 
+            Welcome to FIRST BORN GOSPEL LIFE MINISTRIES, a faith-based non-profit organization
+            dedicated to transforming communities through social development, economic empowerment,
             and educational support programs inspired by the Gospel of Christ.
           </p>
           <p className="welcome-text">
-            We believe in the power of love, compassion, and service to create lasting change in 
-            the lives of individuals and communities. Through our programs, we strive to bring hope, 
+            We believe in the power of love, compassion, and service to create lasting change in
+            the lives of individuals and communities. Through our programs, we strive to bring hope,
             opportunity, and transformation to those who need it most.
           </p>
         </div>
@@ -99,6 +111,44 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Featured Projects */}
+      {homeProjects.length > 0 && (
+        <section className="blog-section">
+          <div className="container">
+            <h2>Our Featured Projects</h2>
+            <p className="blog-section-subtitle">Discover the impactful work we're doing in communities</p>
+            <div className="blog-grid">
+              {homeProjects.map(project => (
+                <article key={project.id} className="blog-card" onClick={() => navigate(`/projects`)}>
+                  {project.images && project.images.length > 0 && (
+                    <div className="blog-card-image">
+                      <img src={project.images[0]} alt={project.title} />
+                    </div>
+                  )}
+                  <div className="blog-card-content">
+                    <h3 className="blog-card-title-only">{project.title}</h3>
+                    <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1rem' }}>
+                      {project.description.substring(0, 100)}...
+                    </p>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                      <span className="role-badge" style={{ fontSize: '0.8rem' }}>
+                        {project.category}
+                      </span>
+                      <span className="role-badge" style={{ fontSize: '0.8rem', backgroundColor: project.status === 'completed' ? '#10b981' : '#f59e0b' }}>
+                        {project.status}
+                      </span>
+                    </div>
+                    <Link to="/projects" className="blog-read-more-btn" onClick={(e) => e.stopPropagation()}>
+                      View All Projects
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Blog Section */}
       {blogPosts.length > 0 && (

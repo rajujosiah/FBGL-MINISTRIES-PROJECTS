@@ -341,6 +341,32 @@ export const updateProject = async (id, updates) => {
   }
 };
 
+export const getHomePageProjects = async () => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.getHomePageProjects();
+  } catch (error) {
+    console.error('Error fetching home page projects:', error);
+    throw new ConnectionError('Failed to fetch home page projects. Please check your internet connection.');
+  }
+};
+
+export const toggleProjectHomeStatus = async (id, showOnHome) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.toggleProjectHomeStatus(id, showOnHome);
+  } catch (error) {
+    console.error('Error toggling project home status:', error);
+    throw new ConnectionError('Failed to update project status. Please check your internet connection.');
+  }
+};
+
 export const addProjectImages = async (projectId, images) => {
   if (!isSupabaseConfigured()) {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
@@ -503,6 +529,77 @@ export const addStateDistrict = async (stateDistrict) => {
   } catch (error) {
     console.error('Error adding state district:', error);
     throw new ConnectionError('Failed to save state district. Please check your internet connection.');
+  }
+};
+
+// ============================================================================
+// ADMINS
+// ============================================================================
+export const getAdmins = async () => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.getAdmins();
+  } catch (error) {
+    console.error('Error fetching admins:', error);
+    throw new ConnectionError('Failed to fetch admins. Please check your internet connection.');
+  }
+};
+
+export const addAdmin = async (admin) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.addAdmin(admin);
+  } catch (error) {
+    console.error('Error adding admin:', error);
+    throw new ConnectionError('Failed to save admin. Please check your internet connection.');
+  }
+};
+
+export const updateAdmin = async (id, updates) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.updateAdmin(id, updates);
+  } catch (error) {
+    console.error('Error updating admin:', error);
+    throw new ConnectionError('Failed to update admin. Please check your internet connection.');
+  }
+};
+
+export const deleteAdmin = async (id) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.deleteAdmin(id);
+  } catch (error) {
+    console.error('Error deleting admin:', error);
+    throw new ConnectionError('Failed to delete admin. Please check your internet connection.');
+  }
+};
+
+// ============================================================================
+// SYSTEM
+// ============================================================================
+export const clearAllData = async () => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.clearAllData();
+  } catch (error) {
+    console.error('Error clearing data:', error);
+    throw new ConnectionError('Failed to clear data. Please check your internet connection.');
   }
 };
 

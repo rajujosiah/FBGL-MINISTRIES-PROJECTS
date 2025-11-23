@@ -24,12 +24,12 @@ const ManageAreaManagers = ({ onUpdate }) => {
     address: '',
     phone: '',
     email: '',
-    aadhaar_no: '',
+    password: '',
     aadhaar_no: '',
     bio: '',
-    password: '',
     profile_picture: ''
   });
+  const [generatedPassword, setGeneratedPassword] = useState(null);
   const [showIDCard, setShowIDCard] = useState(false);
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -115,16 +115,21 @@ const ManageAreaManagers = ({ onUpdate }) => {
         const profilePicture = formData.profile_picture ||
           `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=1e3c72&color=fff&size=200`;
 
+        // Use provided password or generate one if empty (fallback)
+        const password = formData.password || Math.random().toString(36).slice(-8);
+        setGeneratedPassword(password);
+
         await addAreaManager({
           ...formData,
           id_no,
           profile_picture: profilePicture,
-          area_manager: `${formData.state} - ${formData.district}`
+          area_manager: `${formData.state} - ${formData.district}`,
+          password: password
         });
       }
       setShowForm(false);
       setShowForm(false);
-      setFormData({ name: '', state: '', district: '', address: '', phone: '', email: '', aadhaar_no: '', bio: '', password: '', profile_picture: '' });
+      setFormData({ name: '', state: '', district: '', address: '', phone: '', email: '', password: '', aadhaar_no: '', bio: '', profile_picture: '' });
       setSelectedManager(null);
       setAvailableDistricts([]);
       await loadAreaManagers();
@@ -146,10 +151,11 @@ const ManageAreaManagers = ({ onUpdate }) => {
       district: manager.district || '',
       address: manager.address || '',
       phone: manager.phone || '',
+      phone: manager.phone || '',
       email: manager.email || '',
+      password: '', // Don't populate password on edit
       aadhaar_no: manager.aadhaar_no || '',
       bio: manager.bio || '',
-      password: manager.password || '',
       profile_picture: manager.profile_picture || ''
     });
     if (manager.state) {
@@ -198,6 +204,24 @@ const ManageAreaManagers = ({ onUpdate }) => {
           message={connectionError}
           onRetry={loadAreaManagers}
         />
+      )}
+
+      {generatedPassword && (
+        <div className="form-modal">
+          <div className="form-modal-content">
+            <div className="form-modal-header">
+              <h3>Area Manager Created</h3>
+            </div>
+            <div style={{ padding: '1.5rem' }}>
+              <p>The area manager has been created successfully.</p>
+              <p>Please share the following password with the user:</p>
+              <p style={{ fontWeight: 'bold', marginTop: '1rem' }}>{generatedPassword}</p>
+            </div>
+            <div className="form-actions">
+              <button className="btn-primary" onClick={() => setGeneratedPassword(null)}>Close</button>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="section-header">
@@ -303,6 +327,20 @@ const ManageAreaManagers = ({ onUpdate }) => {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
+                {!selectedManager && (
+                  <div className="form-group">
+                    <label>Password *</label>
+                    <input
+                      type="text"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder="Enter password"
+                      required
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="form-row">
                 <div className="form-group">
                   <label>Aadhaar No</label>
                   <input
@@ -311,16 +349,6 @@ const ManageAreaManagers = ({ onUpdate }) => {
                     onChange={(e) => setFormData({ ...formData, aadhaar_no: e.target.value })}
                   />
                 </div>
-              </div>
-              <div className="form-group">
-                <label>Password {selectedManager ? '(Leave blank to keep current)' : '*'}</label>
-                <input
-                  type="text"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder={selectedManager ? "Enter new password to change" : "Enter password for login"}
-                  required={!selectedManager}
-                />
               </div>
               <div className="form-group">
                 <label>Bio</label>

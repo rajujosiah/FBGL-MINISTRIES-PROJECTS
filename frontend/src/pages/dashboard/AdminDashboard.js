@@ -6,8 +6,11 @@ import {
   getSocialWorkers,
   getProjects,
   getBlogPosts,
-  initializeData
+  initializeData,
+  toggleProjectHomeStatus,
+  addProject
 } from '../../utils/dataManager';
+import ManageAdmins from '../../components/admin/ManageAdmins';
 import ManageAreaManagers from '../../components/admin/ManageAreaManagers';
 import ManageProjectManagers from '../../components/admin/ManageProjectManagers';
 import ManageSocialWorkers from '../../components/admin/ManageSocialWorkers';
@@ -16,15 +19,16 @@ import ManageBoardMembers from '../../components/admin/ManageBoardMembers';
 import BlogManagement from '../../components/admin/BlogManagement';
 import ProfileModal from '../../components/ProfileModal';
 import ConnectionError from '../../components/ConnectionError';
-import { ConnectionError as DataConnectionError } from '../../utils/dataManager';
-import { IoMdPerson, IoMdBriefcase, IoMdPeople, IoMdDocument, IoMdCreate } from 'react-icons/io';
+import { ConnectionError as DataConnectionError, getAdmins } from '../../utils/dataManager';
+import { IoMdPerson, IoMdBriefcase, IoMdPeople, IoMdDocument, IoMdCreate, IoMdKey, IoMdHome, IoMdCheckmark, IoMdAdd, IoMdClose } from 'react-icons/io';
 import './Dashboard.css';
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [showProfile, setShowProfile] = useState(false);
   const [stats, setStats] = useState({
+    admins: 0,
     areaManagers: 0,
     projectManagers: 0,
     socialWorkers: 0,
@@ -32,6 +36,23 @@ const AdminDashboard = () => {
     blogPosts: 0
   });
   const [connectionError, setConnectionError] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [projectManagers, setProjectManagers] = useState([]);
+  const [socialWorkers, setSocialWorkers] = useState([]);
+  const [newProject, setNewProject] = useState({
+    title: '',
+    description: '',
+    category: 'social',
+    status: 'upcoming',
+    location: '',
+    area_of_operation: '',
+    target_beneficiaries: '',
+    project_manager_id: '',
+    social_worker_id: '',
+    images: []
+  });
 
   useEffect(() => {
     initializeData();
@@ -41,7 +62,8 @@ const AdminDashboard = () => {
   const loadStats = async () => {
     try {
       setConnectionError(null);
-      const [areas, projects, workers, projs, posts] = await Promise.all([
+      const [adminsData, areas, projects, workers, projs, posts] = await Promise.all([
+        getAdmins(),
         getAreaManagers(),
         getProjectManagers(),
         getSocialWorkers(),
@@ -50,6 +72,7 @@ const AdminDashboard = () => {
       ]);
 
       setStats({
+        admins: adminsData.length,
         areaManagers: areas.length,
         projectManagers: projects.length,
         socialWorkers: workers.length,
@@ -63,6 +86,77 @@ const AdminDashboard = () => {
         setConnectionError('Failed to load dashboard data. Please check your internet connection.');
       }
     }
+  };
+
+  const loadProjects = async () => {
+    setLoadingProjects(true);
+    try {
+      const allProjects = await getProjects({});
+      setProjects(allProjects);
+
+      // Load project managers and social workers for the form
+      const pms = await getProjectManagers();
+      const sws = await getSocialWorkers();
+      setProjectManagers(pms);
+      setSocialWorkers(sws);
+    } catch (error) {
+      console.error('Error loading projects:', error);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  const handleToggleHomeStatus = async (projectId, currentStatus) => {
+    try {
+      await toggleProjectHomeStatus(projectId, !currentStatus);
+      // Reload projects to reflect the change
+      await loadProjects();
+    } catch (error) {
+      alert('Failed to update project: ' + error.message);
+    }
+  };
+
+  const handleCreateProject = async (e) => {
+    e.preventDefault();
+    try {
+      await addProject(newProject);
+      alert('Project created successfully!');
+      setShowProjectForm(false);
+      setNewProject({
+        title: '',
+        description: '',
+        category: 'social',
+        status: 'upcoming',
+        location: '',
+        area_of_operation: '',
+        target_beneficiaries: '',
+        project_manager_id: '',
+        social_worker_id: '',
+        images: []
+      });
+      await loadProjects();
+      await loadStats();
+    } catch (error) {
+      alert('Failed to create project: ' + error.message);
+    }
+  };
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const readers = files.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(readers).then(images => {
+      setNewProject(prev => ({
+        ...prev,
+        images: [...prev.images, ...images]
+      }));
+    });
   };
 
   return (
@@ -107,6 +201,12 @@ const AdminDashboard = () => {
             Overview
           </button>
           <button
+            className={activeTab === 'admins' ? 'active' : ''}
+            onClick={() => setActiveTab('admins')}
+          >
+            Admins
+          </button>
+          <button
             className={activeTab === 'area-managers' ? 'active' : ''}
             onClick={() => setActiveTab('area-managers')}
           >
@@ -142,6 +242,12 @@ const AdminDashboard = () => {
           >
             Board Members
           </button>
+          <button
+            className={activeTab === 'projects' ? 'active' : ''}
+            onClick={() => { setActiveTab('projects'); loadProjects(); }}
+          >
+            Projects
+          </button>
         </div>
 
         <div className="dashboard-content">
@@ -157,6 +263,13 @@ const AdminDashboard = () => {
               <div className="dashboard-section">
                 <h2>Dashboard Overview</h2>
                 <div className="stats-grid">
+                  <div className="stat-card">
+                    <IoMdKey className="stat-icon" />
+                    <div className="stat-content">
+                      <h3>Admins</h3>
+                      <p className="stat-number">{stats.admins}</p>
+                    </div>
+                  </div>
                   <div className="stat-card">
                     <div className="stat-icon">🏢</div>
                     <div className="stat-content">
@@ -198,6 +311,10 @@ const AdminDashboard = () => {
               <div className="dashboard-section">
                 <h2>Quick Actions</h2>
                 <div className="actions-grid">
+                  <div className="action-card" onClick={() => setActiveTab('admins')}>
+                    <h3>Manage Admins</h3>
+                    <p>Create and manage Admin users</p>
+                  </div>
                   <div className="action-card" onClick={() => setActiveTab('area-managers')}>
                     <h3>Manage Area Managers</h3>
                     <p>Create and manage Area Managers</p>
@@ -222,9 +339,19 @@ const AdminDashboard = () => {
                     <h3>Manage Board</h3>
                     <p>Add and edit board members</p>
                   </div>
+                  <div className="action-card" onClick={() => { setActiveTab('projects'); loadProjects(); }}>
+                    <h3>Manage Projects</h3>
+                    <p>Select projects to show on home page</p>
+                  </div>
                 </div>
               </div>
             </>
+          )}
+
+          {activeTab === 'admins' && (
+            <div className="dashboard-section">
+              <ManageAdmins onUpdate={loadStats} />
+            </div>
           )}
 
           {activeTab === 'area-managers' && (
@@ -262,7 +389,73 @@ const AdminDashboard = () => {
               <ManageBoardMembers onUpdate={loadStats} />
             </div>
           )}
+
+          {activeTab === 'projects' && (
+            <div className="dashboard-section">
+              <div className="section-header">
+                <div>
+                  <h2>Manage Home Page Projects</h2>
+                  <p className="section-description">
+                    Select which projects should be displayed on the home page.
+                  </p>
+                </div>
+              </div>
+
+              <div className="manage-section">
+                {loadingProjects ? (
+                  <p>Loading projects...</p>
+                ) : projects.length === 0 ? (
+                  <p className="info-text">No projects found. Create projects first to display them on the home page.</p>
+                ) : (
+                  <div className="projects-list">
+                    {projects.map(project => (
+                      <div key={project.id} className="project-item" style={{
+                        padding: '1rem',
+                        border: '1px solid #ddd',
+                        borderRadius: '8px',
+                        marginBottom: '1rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        backgroundColor: project.show_on_home ? '#f0f9ff' : '#fff'
+                      }}>
+                        <div style={{ flex: 1 }}>
+                          <h4 style={{ margin: '0 0 0.5rem 0' }}>{project.title}</h4>
+                          <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>
+                            Category: {project.category} | Status: {project.status}
+                          </p>
+                        </div>
+                        <button
+                          className={project.show_on_home ? 'btn-success' : 'btn-secondary'}
+                          onClick={() => handleToggleHomeStatus(project.id, project.show_on_home)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            minWidth: '150px',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          {project.show_on_home ? (
+                            <>
+                              <IoMdCheckmark /> Showing on Home
+                            </>
+                          ) : (
+                            <>
+                              <IoMdHome /> Show on Home
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
+
+
       </div>
     </div>
   );

@@ -53,9 +53,18 @@ const OurTeam = () => {
 
   useEffect(() => {
     if (type && id && !loading) {
-      handleViewProfile(type, id);
+      // Check if we are already viewing this profile to avoid loops
+      const currentIdNo =
+        (type === 'area_manager' && selectedAreaManager) ? normalizeIdNo(selectedAreaManager.id_no) :
+          (type === 'project_manager' && selectedProjectManager) ? normalizeIdNo(selectedProjectManager.id_no) :
+            (type === 'social_worker' && selectedSocialWorker) ? normalizeIdNo(selectedSocialWorker.id_no) : null;
+
+      // Only load if we're not already viewing this profile
+      if (currentIdNo !== id) {
+        handleViewProfile(type, id);
+      }
     }
-  }, [type, id, loading]);
+  }, [type, id, loading, selectedAreaManager, selectedProjectManager, selectedSocialWorker]);
 
   const loadData = async () => {
     setLoading(true);

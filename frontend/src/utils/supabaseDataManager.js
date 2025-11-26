@@ -257,13 +257,13 @@ export const updateAreaManager = async (id, updates) => {
       .update(updatesToApply)
       .eq('id', id)
       .select()
-      .single();
+      .select();
 
     if (error) {
       handleSupabaseError(error, 'update area manager');
     }
 
-    return data;
+    return data?.[0];
   } catch (error) {
     if (error instanceof ConnectionError) {
       throw error;
@@ -370,13 +370,13 @@ export const updateProjectManager = async (id, updates) => {
       .update(updatesToApply)
       .eq('id', id)
       .select()
-      .single();
+      .select();
 
     if (error) {
       handleSupabaseError(error, 'update project manager');
     }
 
-    return data;
+    return data?.[0];
   } catch (error) {
     if (error instanceof ConnectionError) {
       throw error;
@@ -504,13 +504,13 @@ export const updateSocialWorker = async (id, updates) => {
       .update(updatesToApply)
       .eq('id', id)
       .select()
-      .single();
+      .select();
 
     if (error) {
       handleSupabaseError(error, 'update social worker');
     }
 
-    return data;
+    return data?.[0];
   } catch (error) {
     if (error instanceof ConnectionError) {
       throw error;
@@ -667,13 +667,13 @@ export const updateProject = async (id, updates) => {
       })
       .eq('id', id)
       .select()
-      .single();
+      .select();
 
     if (error) {
       handleSupabaseError(error, 'update project');
     }
 
-    return data;
+    return data?.[0];
   } catch (error) {
     if (error instanceof ConnectionError) {
       throw error;
@@ -736,13 +736,13 @@ export const toggleProjectHomeStatus = async (id, showOnHome) => {
       .update({ show_on_home: showOnHome })
       .eq('id', id)
       .select()
-      .single();
+      .select();
 
     if (error) {
       handleSupabaseError(error, 'update project home status');
     }
 
-    return data;
+    return data?.[0];
   } catch (error) {
     if (error instanceof ConnectionError) {
       throw error;
@@ -842,13 +842,13 @@ export const updateBlogPost = async (id, updates) => {
       })
       .eq('id', id)
       .select()
-      .single();
+      .select();
 
     if (error) {
       handleSupabaseError(error, 'update blog post');
     }
 
-    return data;
+    return data?.[0];
   } catch (error) {
     if (error instanceof ConnectionError) {
       throw error;
@@ -935,13 +935,13 @@ export const updateBoardMember = async (id, updates) => {
       })
       .eq('id', id)
       .select()
-      .single();
+      .select();
 
     if (error) {
       handleSupabaseError(error, 'update board member');
     }
 
-    return data;
+    return data?.[0];
   } catch (error) {
     if (error instanceof ConnectionError) {
       throw error;

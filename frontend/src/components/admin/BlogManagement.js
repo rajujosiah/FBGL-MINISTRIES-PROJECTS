@@ -46,7 +46,7 @@ const BlogManagement = ({ onUpdate }) => {
       setConnectionError(null);
       // Ensure images array is properly formatted
       const imagesToSave = Array.isArray(formData.images) ? formData.images : (formData.images ? [formData.images] : []);
-      
+
       const postData = {
         ...formData,
         images: imagesToSave // Ensure it's always an array with all images
@@ -58,12 +58,12 @@ const BlogManagement = ({ onUpdate }) => {
         if (existingPost && existingPost.images) {
           // Merge existing images with form images (form images might have new ones added)
           const existingImages = Array.isArray(existingPost.images) ? existingPost.images : [];
-          
+
           // Use formData.images which already includes all images (existing + newly added)
           // The formData should have all images when editing because handleEdit loads them
           postData.images = imagesToSave; // Use the complete list from form
         }
-        
+
         await updateBlogPost(selectedPost.id, {
           ...postData,
           updated_at: new Date().toISOString()
@@ -75,20 +75,25 @@ const BlogManagement = ({ onUpdate }) => {
           created_at: new Date().toISOString()
         });
       }
-      
+
       setShowForm(false);
       setFormData({ title: '', content: '', excerpt: '', featured_image: '', images: [] });
       setSelectedPost(null);
       await loadBlogPosts();
       onUpdate?.();
-      
+
       alert(selectedPost ? 'Blog post updated successfully with all images!' : 'Blog post created successfully!');
     } catch (error) {
       console.error('Error saving blog post:', error);
       if (error instanceof DataConnectionError) {
-        setConnectionError(error.message);
+        // Check for timeout or payload size issues
+        if (error.message.includes('timeout') || error.message.includes('payload')) {
+          setConnectionError('The request timed out. This usually happens when uploading too many large images. Please try reducing the number of images or their quality.');
+        } else {
+          setConnectionError(error.message);
+        }
       } else {
-        setConnectionError('Failed to save blog post. Please check your internet connection.');
+        setConnectionError('Failed to save blog post. Please check your internet connection or try uploading fewer images.');
       }
     } finally {
       setUploading(false);
@@ -108,7 +113,7 @@ const BlogManagement = ({ onUpdate }) => {
     try {
       setUploading(true);
       const compressedImage = await compressImage(file);
-      
+
       if (type === 'featured') {
         setFormData({ ...formData, featured_image: compressedImage });
       } else {
@@ -161,12 +166,12 @@ const BlogManagement = ({ onUpdate }) => {
   return (
     <div className="manage-section">
       {connectionError && (
-        <ConnectionError 
-          message={connectionError} 
+        <ConnectionError
+          message={connectionError}
           onRetry={loadBlogPosts}
         />
       )}
-      
+
       <div className="section-header">
         <h2>Blog Management</h2>
         <button className="btn-primary" onClick={() => { setShowForm(true); setSelectedPost(null); }}>
@@ -277,7 +282,7 @@ const BlogManagement = ({ onUpdate }) => {
                       setUploading(true);
                       const validImages = [];
                       const skippedFiles = [];
-                      
+
                       try {
                         for (const file of files) {
                           const validation = validateImageFile(file);
@@ -298,12 +303,12 @@ const BlogManagement = ({ onUpdate }) => {
                           // Ensure formData.images is an array before spreading
                           const currentImages = Array.isArray(formData.images) ? formData.images : [];
                           const updatedImages = [...currentImages, ...validImages];
-                          
-                          setFormData({ 
-                            ...formData, 
+
+                          setFormData({
+                            ...formData,
                             images: updatedImages
                           });
-                          
+
                           if (skippedFiles.length > 0) {
                             alert(`Successfully uploaded ${validImages.length} image(s)!\n\n${skippedFiles.length} file(s) skipped:\n${skippedFiles.map(f => `• ${f.name}: ${f.reason}`).join('\n')}`);
                           } else {

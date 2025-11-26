@@ -1,8 +1,21 @@
-// Data Manager - Supabase Only (No Fallback)
-// This manages all team members, projects, and assignments using Supabase only
+// Data Manager - Supabase with Caching
+// This manages all team members, projects, and assignments using Supabase with intelligent caching
 
 // Import Supabase data manager
 import * as supabaseManager from './supabaseDataManager';
+
+// Import cache manager
+import {
+  getCachedData,
+  setCachedData,
+  invalidateCache,
+  invalidateCacheType,
+  clearAllCache,
+  CACHE_TYPES
+} from './cacheManager';
+
+// Import Realtime manager
+import { initializeRealtimeSubscriptions } from './realtimeManager';
 
 // Error class for connection issues
 export class ConnectionError extends Error {
@@ -34,6 +47,10 @@ export const initializeData = async () => {
     if (!initialized) {
       throw new ConnectionError('Failed to connect to Supabase. Please check your internet connection and try again.');
     }
+
+    // Initialize Realtime Subscriptions
+    initializeRealtimeSubscriptions();
+
     return true;
   } catch (error) {
     if (error instanceof ConnectionError) {
@@ -51,11 +68,31 @@ export const getAreaManagers = async () => {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
   }
 
+  // Check cache first
+  const cached = getCachedData(CACHE_TYPES.AREA_MANAGERS);
+  if (cached) return cached;
+
   try {
-    return await supabaseManager.getAreaManagers();
+    const data = await supabaseManager.getAreaManagers();
+    // Cache the result
+    setCachedData(CACHE_TYPES.AREA_MANAGERS, data);
+    return data;
   } catch (error) {
     console.error('Error fetching area managers:', error);
     throw new ConnectionError('Failed to fetch area managers. Please check your internet connection.');
+  }
+};
+
+export const getAreaManagerById = async (id) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.getAreaManagerById(id);
+  } catch (error) {
+    console.error('Error fetching area manager:', error);
+    throw new ConnectionError('Failed to fetch area manager. Please check your internet connection.');
   }
 };
 
@@ -65,7 +102,9 @@ export const addAreaManager = async (manager) => {
   }
 
   try {
-    return await supabaseManager.addAreaManager(manager);
+    const result = await supabaseManager.addAreaManager(manager);
+    invalidateCacheType(CACHE_TYPES.AREA_MANAGERS);
+    return result;
   } catch (error) {
     console.error('Error adding area manager:', error);
     throw new ConnectionError('Failed to save area manager. Please check your internet connection.');
@@ -78,7 +117,9 @@ export const updateAreaManager = async (id, updates) => {
   }
 
   try {
-    return await supabaseManager.updateAreaManager(id, updates);
+    const result = await supabaseManager.updateAreaManager(id, updates);
+    invalidateCacheType(CACHE_TYPES.AREA_MANAGERS);
+    return result;
   } catch (error) {
     console.error('Error updating area manager:', error);
     throw new ConnectionError('Failed to update area manager. Please check your internet connection.');
@@ -91,7 +132,9 @@ export const deleteAreaManager = async (id) => {
   }
 
   try {
-    return await supabaseManager.deleteAreaManager(id);
+    const result = await supabaseManager.deleteAreaManager(id);
+    invalidateCacheType(CACHE_TYPES.AREA_MANAGERS);
+    return result;
   } catch (error) {
     console.error('Error deleting area manager:', error);
     throw new ConnectionError('Failed to delete area manager. Please check your internet connection.');
@@ -104,7 +147,9 @@ export const assignStateDistrictToAreaManager = async (areaManagerId, state, dis
   }
 
   try {
-    return await supabaseManager.assignStateDistrictToAreaManager(areaManagerId, state, district);
+    const result = await supabaseManager.assignStateDistrictToAreaManager(areaManagerId, state, district);
+    invalidateCacheType(CACHE_TYPES.AREA_MANAGERS);
+    return result;
   } catch (error) {
     console.error('Error assigning state/district:', error);
     throw new ConnectionError('Failed to assign state/district. Please check your internet connection.');
@@ -119,8 +164,15 @@ export const getProjectManagers = async (areaManagerId = null) => {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
   }
 
+  // Check cache first
+  const cached = getCachedData(CACHE_TYPES.PROJECT_MANAGERS, { areaManagerId });
+  if (cached) return cached;
+
   try {
-    return await supabaseManager.getProjectManagers(areaManagerId);
+    const data = await supabaseManager.getProjectManagers(areaManagerId);
+    // Cache the result
+    setCachedData(CACHE_TYPES.PROJECT_MANAGERS, data, { areaManagerId });
+    return data;
   } catch (error) {
     console.error('Error fetching project managers:', error);
     throw new ConnectionError('Failed to fetch project managers. Please check your internet connection.');
@@ -146,7 +198,9 @@ export const addProjectManager = async (manager) => {
   }
 
   try {
-    return await supabaseManager.addProjectManager(manager);
+    const result = await supabaseManager.addProjectManager(manager);
+    invalidateCacheType(CACHE_TYPES.PROJECT_MANAGERS);
+    return result;
   } catch (error) {
     console.error('Error adding project manager:', error);
     throw new ConnectionError('Failed to save project manager. Please check your internet connection.');
@@ -159,7 +213,9 @@ export const updateProjectManager = async (id, updates) => {
   }
 
   try {
-    return await supabaseManager.updateProjectManager(id, updates);
+    const result = await supabaseManager.updateProjectManager(id, updates);
+    invalidateCacheType(CACHE_TYPES.PROJECT_MANAGERS);
+    return result;
   } catch (error) {
     console.error('Error updating project manager:', error);
     throw new ConnectionError('Failed to update project manager. Please check your internet connection.');
@@ -172,7 +228,9 @@ export const deleteProjectManager = async (id) => {
   }
 
   try {
-    return await supabaseManager.deleteProjectManager(id);
+    const result = await supabaseManager.deleteProjectManager(id);
+    invalidateCacheType(CACHE_TYPES.PROJECT_MANAGERS);
+    return result;
   } catch (error) {
     console.error('Error deleting project manager:', error);
     throw new ConnectionError('Failed to delete project manager. Please check your internet connection.');
@@ -185,7 +243,9 @@ export const assignProjectManagerToAreaManager = async (projectManagerId, areaMa
   }
 
   try {
-    return await supabaseManager.assignProjectManagerToAreaManager(projectManagerId, areaManagerId);
+    const result = await supabaseManager.assignProjectManagerToAreaManager(projectManagerId, areaManagerId);
+    invalidateCacheType(CACHE_TYPES.PROJECT_MANAGERS);
+    return result;
   } catch (error) {
     console.error('Error assigning project manager:', error);
     throw new ConnectionError('Failed to assign project manager. Please check your internet connection.');
@@ -198,7 +258,9 @@ export const unassignProjectManager = async (projectManagerId) => {
   }
 
   try {
-    return await supabaseManager.unassignProjectManager(projectManagerId);
+    const result = await supabaseManager.unassignProjectManager(projectManagerId);
+    invalidateCacheType(CACHE_TYPES.PROJECT_MANAGERS);
+    return result;
   } catch (error) {
     console.error('Error unassigning project manager:', error);
     throw new ConnectionError('Failed to unassign project manager. Please check your internet connection.');
@@ -211,7 +273,10 @@ export const assignProjectToProjectManager = async (projectId, projectManagerId)
   }
 
   try {
-    return await supabaseManager.assignProjectToProjectManager(projectId, projectManagerId);
+    const result = await supabaseManager.assignProjectToProjectManager(projectId, projectManagerId);
+    invalidateCacheType(CACHE_TYPES.PROJECT_MANAGERS);
+    invalidateCacheType(CACHE_TYPES.PROJECTS);
+    return result;
   } catch (error) {
     console.error('Error assigning project:', error);
     throw new ConnectionError('Failed to assign project. Please check your internet connection.');
@@ -226,11 +291,31 @@ export const getSocialWorkers = async (projectManagerId = null) => {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
   }
 
+  // Check cache first
+  const cached = getCachedData(CACHE_TYPES.SOCIAL_WORKERS, { projectManagerId });
+  if (cached) return cached;
+
   try {
-    return await supabaseManager.getSocialWorkers(projectManagerId);
+    const data = await supabaseManager.getSocialWorkers(projectManagerId);
+    // Cache the result
+    setCachedData(CACHE_TYPES.SOCIAL_WORKERS, data, { projectManagerId });
+    return data;
   } catch (error) {
     console.error('Error fetching social workers:', error);
     throw new ConnectionError('Failed to fetch social workers. Please check your internet connection.');
+  }
+};
+
+export const getSocialWorkerById = async (id) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.getSocialWorkerById(id);
+  } catch (error) {
+    console.error('Error fetching social worker:', error);
+    throw new ConnectionError('Failed to fetch social worker. Please check your internet connection.');
   }
 };
 
@@ -240,7 +325,9 @@ export const addSocialWorker = async (worker) => {
   }
 
   try {
-    return await supabaseManager.addSocialWorker(worker);
+    const result = await supabaseManager.addSocialWorker(worker);
+    invalidateCacheType(CACHE_TYPES.SOCIAL_WORKERS);
+    return result;
   } catch (error) {
     console.error('Error adding social worker:', error);
     throw new ConnectionError('Failed to save social worker. Please check your internet connection.');
@@ -253,7 +340,9 @@ export const updateSocialWorker = async (id, updates) => {
   }
 
   try {
-    return await supabaseManager.updateSocialWorker(id, updates);
+    const result = await supabaseManager.updateSocialWorker(id, updates);
+    invalidateCacheType(CACHE_TYPES.SOCIAL_WORKERS);
+    return result;
   } catch (error) {
     console.error('Error updating social worker:', error);
     throw new ConnectionError('Failed to update social worker. Please check your internet connection.');
@@ -266,7 +355,9 @@ export const deleteSocialWorker = async (id) => {
   }
 
   try {
-    return await supabaseManager.deleteSocialWorker(id);
+    const result = await supabaseManager.deleteSocialWorker(id);
+    invalidateCacheType(CACHE_TYPES.SOCIAL_WORKERS);
+    return result;
   } catch (error) {
     console.error('Error deleting social worker:', error);
     throw new ConnectionError('Failed to delete social worker. Please check your internet connection.');
@@ -279,7 +370,9 @@ export const assignSocialWorkerToProjectManager = async (socialWorkerId, project
   }
 
   try {
-    return await supabaseManager.assignSocialWorkerToProjectManager(socialWorkerId, projectManagerId);
+    const result = await supabaseManager.assignSocialWorkerToProjectManager(socialWorkerId, projectManagerId);
+    invalidateCacheType(CACHE_TYPES.SOCIAL_WORKERS);
+    return result;
   } catch (error) {
     console.error('Error assigning social worker:', error);
     throw new ConnectionError('Failed to assign social worker. Please check your internet connection.');
@@ -292,7 +385,9 @@ export const unassignSocialWorker = async (socialWorkerId) => {
   }
 
   try {
-    return await supabaseManager.unassignSocialWorker(socialWorkerId);
+    const result = await supabaseManager.unassignSocialWorker(socialWorkerId);
+    invalidateCacheType(CACHE_TYPES.SOCIAL_WORKERS);
+    return result;
   } catch (error) {
     console.error('Error unassigning social worker:', error);
     throw new ConnectionError('Failed to unassign social worker. Please check your internet connection.');
@@ -307,11 +402,31 @@ export const getProjects = async (filters = {}) => {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
   }
 
+  // Check cache first
+  const cached = getCachedData(CACHE_TYPES.PROJECTS, filters);
+  if (cached) return cached;
+
   try {
-    return await supabaseManager.getProjects(filters);
+    const data = await supabaseManager.getProjects(filters);
+    // Cache the result
+    setCachedData(CACHE_TYPES.PROJECTS, data, filters);
+    return data;
   } catch (error) {
     console.error('Error fetching projects:', error);
     throw new ConnectionError('Failed to fetch projects. Please check your internet connection.');
+  }
+};
+
+export const getProjectById = async (id) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.getProjectById(id);
+  } catch (error) {
+    console.error('Error fetching project:', error);
+    throw new ConnectionError('Failed to fetch project. Please check your internet connection.');
   }
 };
 
@@ -321,7 +436,10 @@ export const addProject = async (project) => {
   }
 
   try {
-    return await supabaseManager.addProject(project);
+    const result = await supabaseManager.addProject(project);
+    invalidateCacheType(CACHE_TYPES.PROJECTS);
+    invalidateCacheType(CACHE_TYPES.HOME_PROJECTS);
+    return result;
   } catch (error) {
     console.error('Error adding project:', error);
     throw new ConnectionError('Failed to save project. Please check your internet connection.');
@@ -334,7 +452,10 @@ export const updateProject = async (id, updates) => {
   }
 
   try {
-    return await supabaseManager.updateProject(id, updates);
+    const result = await supabaseManager.updateProject(id, updates);
+    invalidateCacheType(CACHE_TYPES.PROJECTS);
+    invalidateCacheType(CACHE_TYPES.HOME_PROJECTS);
+    return result;
   } catch (error) {
     console.error('Error updating project:', error);
     throw new ConnectionError('Failed to update project. Please check your internet connection.');
@@ -346,8 +467,15 @@ export const getHomePageProjects = async () => {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
   }
 
+  // Check cache first
+  const cached = getCachedData(CACHE_TYPES.HOME_PROJECTS);
+  if (cached) return cached;
+
   try {
-    return await supabaseManager.getHomePageProjects();
+    const data = await supabaseManager.getHomePageProjects();
+    // Cache the result
+    setCachedData(CACHE_TYPES.HOME_PROJECTS, data);
+    return data;
   } catch (error) {
     console.error('Error fetching home page projects:', error);
     throw new ConnectionError('Failed to fetch home page projects. Please check your internet connection.');
@@ -360,7 +488,10 @@ export const toggleProjectHomeStatus = async (id, showOnHome) => {
   }
 
   try {
-    return await supabaseManager.toggleProjectHomeStatus(id, showOnHome);
+    const result = await supabaseManager.toggleProjectHomeStatus(id, showOnHome);
+    invalidateCacheType(CACHE_TYPES.PROJECTS);
+    invalidateCacheType(CACHE_TYPES.HOME_PROJECTS);
+    return result;
   } catch (error) {
     console.error('Error toggling project home status:', error);
     throw new ConnectionError('Failed to update project status. Please check your internet connection.');
@@ -373,7 +504,10 @@ export const addProjectImages = async (projectId, images) => {
   }
 
   try {
-    return await supabaseManager.addProjectImages(projectId, images);
+    const result = await supabaseManager.addProjectImages(projectId, images);
+    invalidateCacheType(CACHE_TYPES.PROJECTS);
+    invalidateCacheType(CACHE_TYPES.HOME_PROJECTS);
+    return result;
   } catch (error) {
     console.error('Error adding project images:', error);
     throw new ConnectionError('Failed to upload images. Please check your internet connection.');
@@ -388,8 +522,15 @@ export const getBlogPosts = async () => {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
   }
 
+  // Check cache first
+  const cached = getCachedData(CACHE_TYPES.BLOG_POSTS);
+  if (cached) return cached;
+
   try {
-    return await supabaseManager.getBlogPosts();
+    const data = await supabaseManager.getBlogPosts();
+    // Cache the result
+    setCachedData(CACHE_TYPES.BLOG_POSTS, data);
+    return data;
   } catch (error) {
     console.error('Error fetching blog posts:', error);
     throw new ConnectionError('Failed to fetch blog posts. Please check your internet connection.');
@@ -415,7 +556,9 @@ export const addBlogPost = async (post) => {
   }
 
   try {
-    return await supabaseManager.addBlogPost(post);
+    const result = await supabaseManager.addBlogPost(post);
+    invalidateCacheType(CACHE_TYPES.BLOG_POSTS);
+    return result;
   } catch (error) {
     console.error('Error adding blog post:', error);
     throw new ConnectionError('Failed to save blog post. Please check your internet connection.');
@@ -428,7 +571,9 @@ export const updateBlogPost = async (id, updates) => {
   }
 
   try {
-    return await supabaseManager.updateBlogPost(id, updates);
+    const result = await supabaseManager.updateBlogPost(id, updates);
+    invalidateCacheType(CACHE_TYPES.BLOG_POSTS);
+    return result;
   } catch (error) {
     console.error('Error updating blog post:', error);
     throw new ConnectionError('Failed to update blog post. Please check your internet connection.');
@@ -441,7 +586,9 @@ export const deleteBlogPost = async (id) => {
   }
 
   try {
-    return await supabaseManager.deleteBlogPost(id);
+    const result = await supabaseManager.deleteBlogPost(id);
+    invalidateCacheType(CACHE_TYPES.BLOG_POSTS);
+    return result;
   } catch (error) {
     console.error('Error deleting blog post:', error);
     throw new ConnectionError('Failed to delete blog post. Please check your internet connection.');
@@ -456,8 +603,15 @@ export const getBoardMembers = async () => {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
   }
 
+  // Check cache first
+  const cached = getCachedData(CACHE_TYPES.BOARD_MEMBERS);
+  if (cached) return cached;
+
   try {
-    return await supabaseManager.getBoardMembers();
+    const data = await supabaseManager.getBoardMembers();
+    // Cache the result
+    setCachedData(CACHE_TYPES.BOARD_MEMBERS, data);
+    return data;
   } catch (error) {
     console.error('Error fetching board members:', error);
     throw new ConnectionError('Failed to fetch board members. Please check your internet connection.');
@@ -470,7 +624,9 @@ export const addBoardMember = async (member) => {
   }
 
   try {
-    return await supabaseManager.addBoardMember(member);
+    const result = await supabaseManager.addBoardMember(member);
+    invalidateCacheType(CACHE_TYPES.BOARD_MEMBERS);
+    return result;
   } catch (error) {
     console.error('Error adding board member:', error);
     throw new ConnectionError('Failed to add board member. Please check your internet connection.');
@@ -483,7 +639,9 @@ export const updateBoardMember = async (id, updates) => {
   }
 
   try {
-    return await supabaseManager.updateBoardMember(id, updates);
+    const result = await supabaseManager.updateBoardMember(id, updates);
+    invalidateCacheType(CACHE_TYPES.BOARD_MEMBERS);
+    return result;
   } catch (error) {
     console.error('Error updating board member:', error);
     throw new ConnectionError('Failed to update board member. Please check your internet connection.');
@@ -496,7 +654,9 @@ export const deleteBoardMember = async (id) => {
   }
 
   try {
-    return await supabaseManager.deleteBoardMember(id);
+    const result = await supabaseManager.deleteBoardMember(id);
+    invalidateCacheType(CACHE_TYPES.BOARD_MEMBERS);
+    return result;
   } catch (error) {
     console.error('Error deleting board member:', error);
     throw new ConnectionError('Failed to delete board member. Please check your internet connection.');
@@ -540,8 +700,15 @@ export const getAdmins = async () => {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');
   }
 
+  // Check cache first
+  const cached = getCachedData(CACHE_TYPES.ADMINS);
+  if (cached) return cached;
+
   try {
-    return await supabaseManager.getAdmins();
+    const data = await supabaseManager.getAdmins();
+    // Cache the result
+    setCachedData(CACHE_TYPES.ADMINS, data);
+    return data;
   } catch (error) {
     console.error('Error fetching admins:', error);
     throw new ConnectionError('Failed to fetch admins. Please check your internet connection.');
@@ -554,7 +721,9 @@ export const addAdmin = async (admin) => {
   }
 
   try {
-    return await supabaseManager.addAdmin(admin);
+    const result = await supabaseManager.addAdmin(admin);
+    invalidateCacheType(CACHE_TYPES.ADMINS);
+    return result;
   } catch (error) {
     console.error('Error adding admin:', error);
     throw new ConnectionError('Failed to save admin. Please check your internet connection.');
@@ -567,7 +736,9 @@ export const updateAdmin = async (id, updates) => {
   }
 
   try {
-    return await supabaseManager.updateAdmin(id, updates);
+    const result = await supabaseManager.updateAdmin(id, updates);
+    invalidateCacheType(CACHE_TYPES.ADMINS);
+    return result;
   } catch (error) {
     console.error('Error updating admin:', error);
     throw new ConnectionError('Failed to update admin. Please check your internet connection.');
@@ -580,7 +751,9 @@ export const deleteAdmin = async (id) => {
   }
 
   try {
-    return await supabaseManager.deleteAdmin(id);
+    const result = await supabaseManager.deleteAdmin(id);
+    invalidateCacheType(CACHE_TYPES.ADMINS);
+    return result;
   } catch (error) {
     console.error('Error deleting admin:', error);
     throw new ConnectionError('Failed to delete admin. Please check your internet connection.');
@@ -596,7 +769,9 @@ export const clearAllData = async () => {
   }
 
   try {
-    return await supabaseManager.clearAllData();
+    const result = await supabaseManager.clearAllData();
+    clearAllCache();
+    return result;
   } catch (error) {
     console.error('Error clearing data:', error);
     throw new ConnectionError('Failed to clear data. Please check your internet connection.');

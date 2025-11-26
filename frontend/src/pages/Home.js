@@ -41,8 +41,8 @@ const Home = () => {
           <p className="hero-subtitle">Registration No: Reg. 17/2016</p>
           <p className="hero-tagline">Transforming Lives through Social, Economic & Educational Empowerment in Christ</p>
           <div className="hero-buttons">
-            <Link to="/team" className="btn btn-primary">Learn More</Link>
-            <Link to="/contact" className="btn btn-secondary">Join Us</Link>
+            <Link to="/team" className="btn btn-gold">Learn More</Link>
+            <Link to="/contact" className="btn btn-gold">Join Us</Link>
             <Link to="/donate" className="btn btn-gold">Donate Now</Link>
           </div>
         </div>
@@ -94,19 +94,37 @@ const Home = () => {
               <IoMdPeople className="focus-icon" />
               <h3>Social</h3>
               <p>Community development, health awareness, and social welfare programs that strengthen families and neighborhoods.</p>
-              <Link to="/projects?category=social" className="focus-link">View Projects →</Link>
+              <Link
+                to="/projects?category=social"
+                className="focus-link"
+                style={{ position: 'relative', zIndex: 10 }}
+              >
+                View Projects →
+              </Link>
             </div>
             <div className="focus-card">
               <IoMdBriefcase className="focus-icon" />
               <h3>Economy</h3>
               <p>Economic empowerment through skill development, micro-enterprise support, and financial literacy programs.</p>
-              <Link to="/projects?category=economy" className="focus-link">View Projects →</Link>
+              <Link
+                to="/projects?category=economy"
+                className="focus-link"
+                style={{ position: 'relative', zIndex: 10 }}
+              >
+                View Projects →
+              </Link>
             </div>
             <div className="focus-card">
               <IoMdSchool className="focus-icon" />
               <h3>Education</h3>
               <p>Educational support, scholarships, tutoring programs, and resources to ensure every child has access to quality education.</p>
-              <Link to="/projects?category=education" className="focus-link">View Projects →</Link>
+              <Link
+                to="/projects?category=education"
+                className="focus-link"
+                style={{ position: 'relative', zIndex: 10 }}
+              >
+                View Projects →
+              </Link>
             </div>
           </div>
         </div>

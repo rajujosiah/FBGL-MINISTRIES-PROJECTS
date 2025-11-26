@@ -1,7 +1,7 @@
 .header {
   background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   color: white;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 1000;
@@ -22,7 +22,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
   transition: transform 0.3s ease;
 }
 
@@ -31,7 +31,7 @@
 }
 
 .logo-img {
-  height: 50px;
+  height: 40px;
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
@@ -44,7 +44,7 @@
 
 .logo h1 {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #ffd700;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
@@ -69,7 +69,7 @@
   text-decoration: none;
   font-weight: 500;
   transition: all 0.3s ease;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 5px;
   position: relative;
 }
@@ -230,4 +230,3 @@
     display: none;
   }
 }
-

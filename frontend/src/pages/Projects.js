@@ -20,12 +20,12 @@ const Projects = () => {
     filterProjects();
   }, [selectedCategory, projects]);
 
-  const loadProjects = () => {
+  const loadProjects = async () => {
     setLoading(true);
     try {
-      initializeData();
-      const data = getProjects({}); // Get all projects with empty filters
-      setProjects(data);
+      await initializeData();
+      const data = await getProjects({}); // Get all projects with empty filters
+      setProjects(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading projects:', error);
       setProjects([]);
@@ -154,15 +154,12 @@ const Projects = () => {
                   )}
                   <div className="project-actions">
                     {project.images && project.images.length > 0 && (
-                      <button
+                      <Link
+                        to={`/projects/${project.id}`}
                         className="btn-view-details"
-                        onClick={() => {
-                          // Open image gallery modal (to be implemented)
-                          alert('Image gallery feature coming soon!');
-                        }}
                       >
-                        View Images ({project.images.length})
-                      </button>
+                        View Details ({project.images.length} images)
+                      </Link>
                     )}
                     <Link to="/donate" className="btn-support">Support Project</Link>
                   </div>

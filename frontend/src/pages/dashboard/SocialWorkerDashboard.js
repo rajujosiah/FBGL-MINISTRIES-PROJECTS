@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getProjects, updateProject, addProjectImages, initializeData, getSocialWorkers } from '../../utils/dataManager';
 import { convertMultipleFilesToBase64, validateImageFile, compressImage } from '../../utils/imageUtils';
@@ -54,7 +55,7 @@ const SocialWorkerDashboard = () => {
       let foundWorker = null;
 
       // Strategy 1: Match by username (could be ID no or email)
-      foundWorker = allWorkers.find(sw => 
+      foundWorker = allWorkers.find(sw =>
         (sw.id_no && sw.id_no.replace(/\s+/g, '').toUpperCase() === user.username.toUpperCase()) ||
         (sw.email && sw.email.toLowerCase() === user.username.toLowerCase()) ||
         (sw.email && sw.email.toLowerCase() === (user.username + '@fbgl.org').toLowerCase()) ||
@@ -176,7 +177,7 @@ const SocialWorkerDashboard = () => {
         </div>
 
         <div className="dashboard-section" style={{ marginBottom: '1rem', display: 'flex', gap: '1rem' }}>
-          <button 
+          <button
             className="btn-primary"
             onClick={() => setShowProfile(true)}
           >
@@ -276,7 +277,7 @@ const SocialWorkerDashboard = () => {
                     </div>
                     <div className="project-card-body">
                       <p className="project-card-description">{project.description}</p>
-                      
+
                       {project.location && (
                         <div className="project-card-details-grid">
                           <div className="detail-item">
@@ -286,7 +287,7 @@ const SocialWorkerDashboard = () => {
                               <span className="detail-value">{project.location}</span>
                             </div>
                           </div>
-                          
+
                           {project.target_beneficiaries && (
                             <div className="detail-item">
                               <IoMdPeople className="detail-icon" />
@@ -296,7 +297,7 @@ const SocialWorkerDashboard = () => {
                               </div>
                             </div>
                           )}
-                          
+
                           {project.images && project.images.length > 0 && (
                             <div className="detail-item">
                               <IoMdImages className="detail-icon" />
@@ -331,55 +332,13 @@ const SocialWorkerDashboard = () => {
                         </span>
                       </div>
                       <div className="project-card-actions">
-                        <button 
+                        <Link
+                          to={`/projects/${project.id}`}
                           className="btn-small btn-primary"
-                          onClick={() => {
-                            setSelectedProject(project);
-                            setShowImageUpload(true);
-                          }}
+                          style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
                         >
-                          <IoMdImages style={{ marginRight: '0.5rem' }} /> {project.images && project.images.length > 0 ? 'Add More Images' : 'Upload Images'}
-                        </button>
-                        
-                        {project.status !== 'ongoing' && project.status !== 'Ongoing' && (
-                          <button 
-                            className="btn-small btn-info"
-                            onClick={async () => {
-                              if (window.confirm(`Mark "${project.title}" as ongoing?`)) {
-                                try {
-                                  await updateProject(project.id, { status: 'ongoing' });
-                                  await loadData();
-                                  alert('Project status updated to ongoing!');
-                                } catch (error) {
-                                  console.error('Error updating project:', error);
-                                  alert('Error updating project. Please try again.');
-                                }
-                              }
-                            }}
-                          >
-                            🔄 Mark as Ongoing
-                          </button>
-                        )}
-                        
-                        {(project.status === 'ongoing' || project.status === 'Ongoing' || project.status === 'upcoming' || project.status === 'Upcoming') && (
-                          <button 
-                            className="btn-small btn-success"
-                            onClick={async () => {
-                              if (window.confirm(`Are you sure you want to mark "${project.title}" as completed?`)) {
-                                try {
-                                  await updateProject(project.id, { status: 'completed' });
-                                  await loadData();
-                                  alert('Project marked as completed!');
-                                } catch (error) {
-                                  console.error('Error updating project:', error);
-                                  alert('Error updating project. Please try again.');
-                                }
-                              }
-                            }}
-                          >
-                            ✓ Mark as Completed
-                          </button>
-                        )}
+                          <IoMdDocument style={{ marginRight: '0.5rem' }} /> Manage Project
+                        </Link>
                       </div>
                     </div>
                   </div>

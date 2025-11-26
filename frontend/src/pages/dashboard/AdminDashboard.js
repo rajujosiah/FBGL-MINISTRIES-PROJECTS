@@ -8,8 +8,10 @@ import {
   getBlogPosts,
   initializeData,
   toggleProjectHomeStatus,
-  addProject
+  addProject,
+  getAdmins
 } from '../../utils/dataManager';
+import { compressImage } from '../../utils/imageUtils';
 import ManageAdmins from '../../components/admin/ManageAdmins';
 import ManageAreaManagers from '../../components/admin/ManageAreaManagers';
 import ManageProjectManagers from '../../components/admin/ManageProjectManagers';
@@ -19,7 +21,7 @@ import ManageBoardMembers from '../../components/admin/ManageBoardMembers';
 import BlogManagement from '../../components/admin/BlogManagement';
 import ProfileModal from '../../components/ProfileModal';
 import ConnectionError from '../../components/ConnectionError';
-import { ConnectionError as DataConnectionError, getAdmins } from '../../utils/dataManager';
+import { ConnectionError as DataConnectionError } from '../../utils/dataManager';
 import { IoMdPerson, IoMdBriefcase, IoMdPeople, IoMdDocument, IoMdCreate, IoMdKey, IoMdHome, IoMdCheckmark, IoMdAdd, IoMdClose } from 'react-icons/io';
 import './Dashboard.css';
 
@@ -40,6 +42,7 @@ const AdminDashboard = () => {
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [projectManagers, setProjectManagers] = useState([]);
+  const [areaManagers, setAreaManagers] = useState([]);
   const [socialWorkers, setSocialWorkers] = useState([]);
   const [newProject, setNewProject] = useState({
     title: '',
@@ -49,6 +52,7 @@ const AdminDashboard = () => {
     location: '',
     area_of_operation: '',
     target_beneficiaries: '',
+    area_manager_id: '',
     project_manager_id: '',
     social_worker_id: '',
     images: []
@@ -94,9 +98,13 @@ const AdminDashboard = () => {
       const allProjects = await getProjects({});
       setProjects(allProjects);
 
-      // Load project managers and social workers for the form
-      const pms = await getProjectManagers();
-      const sws = await getSocialWorkers();
+      // Load managers and workers for the form
+      const [ams, pms, sws] = await Promise.all([
+        getAreaManagers(),
+        getProjectManagers(),
+        getSocialWorkers()
+      ]);
+      setAreaManagers(ams);
       setProjectManagers(pms);
       setSocialWorkers(sws);
     } catch (error) {
@@ -130,6 +138,7 @@ const AdminDashboard = () => {
         location: '',
         area_of_operation: '',
         target_beneficiaries: '',
+        area_manager_id: '',
         project_manager_id: '',
         social_worker_id: '',
         images: []
@@ -141,22 +150,22 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-    const readers = files.map(file => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(file);
-      });
-    });
 
-    Promise.all(readers).then(images => {
+    try {
+      const compressedImages = await Promise.all(
+        files.map(file => compressImage(file))
+      );
+
       setNewProject(prev => ({
         ...prev,
-        images: [...prev.images, ...images]
+        images: [...prev.images, ...compressedImages]
       }));
-    });
+    } catch (error) {
+      console.error('Error compressing images:', error);
+      alert('Failed to process images. Please try again.');
+    }
   };
 
   return (
@@ -225,16 +234,16 @@ const AdminDashboard = () => {
             Social Workers
           </button>
           <button
+            className={activeTab === 'projects' ? 'active' : ''}
+            onClick={() => setActiveTab('projects')}
+          >
+            Projects
+          </button>
+          <button
             className={activeTab === 'assignments' ? 'active' : ''}
             onClick={() => setActiveTab('assignments')}
           >
             Assignments
-          </button>
-          <button
-            className={activeTab === 'blog' ? 'active' : ''}
-            onClick={() => setActiveTab('blog')}
-          >
-            Blog Management
           </button>
           <button
             className={activeTab === 'board-members' ? 'active' : ''}
@@ -243,10 +252,10 @@ const AdminDashboard = () => {
             Board Members
           </button>
           <button
-            className={activeTab === 'projects' ? 'active' : ''}
-            onClick={() => { setActiveTab('projects'); loadProjects(); }}
+            className={activeTab === 'blog' ? 'active' : ''}
+            onClick={() => setActiveTab('blog')}
           >
-            Projects
+            Blog Posts
           </button>
         </div>
 
@@ -259,207 +268,140 @@ const AdminDashboard = () => {
           )}
 
           {activeTab === 'overview' && (
-            <>
-              <div className="dashboard-section">
-                <h2>Dashboard Overview</h2>
-                <div className="stats-grid">
-                  <div className="stat-card">
-                    <IoMdKey className="stat-icon" />
-                    <div className="stat-content">
-                      <h3>Admins</h3>
-                      <p className="stat-number">{stats.admins}</p>
-                    </div>
+            <div className="overview-section">
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-icon admin-icon"><IoMdKey /></div>
+                  <div className="stat-info">
+                    <h3>{stats.admins}</h3>
+                    <p>Admins</p>
                   </div>
-                  <div className="stat-card">
-                    <div className="stat-icon">🏢</div>
-                    <div className="stat-content">
-                      <h3>Area Managers</h3>
-                      <p className="stat-number">{stats.areaManagers}</p>
-                    </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-icon area-icon"><IoMdPerson /></div>
+                  <div className="stat-info">
+                    <h3>{stats.areaManagers}</h3>
+                    <p>Area Managers</p>
                   </div>
-                  <div className="stat-card">
-                    <IoMdBriefcase className="stat-icon" />
-                    <div className="stat-content">
-                      <h3>Project Managers</h3>
-                      <p className="stat-number">{stats.projectManagers}</p>
-                    </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-icon project-icon"><IoMdBriefcase /></div>
+                  <div className="stat-info">
+                    <h3>{stats.projectManagers}</h3>
+                    <p>Project Managers</p>
                   </div>
-                  <div className="stat-card">
-                    <IoMdPeople className="stat-icon" />
-                    <div className="stat-content">
-                      <h3>Social Workers</h3>
-                      <p className="stat-number">{stats.socialWorkers}</p>
-                    </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-icon worker-icon"><IoMdPeople /></div>
+                  <div className="stat-info">
+                    <h3>{stats.socialWorkers}</h3>
+                    <p>Social Workers</p>
                   </div>
-                  <div className="stat-card">
-                    <IoMdDocument className="stat-icon" />
-                    <div className="stat-content">
-                      <h3>Total Projects</h3>
-                      <p className="stat-number">{stats.projects}</p>
-                    </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-icon project-count-icon"><IoMdDocument /></div>
+                  <div className="stat-info">
+                    <h3>{stats.projects}</h3>
+                    <p>Projects</p>
                   </div>
-                  <div className="stat-card">
-                    <IoMdCreate className="stat-icon" />
-                    <div className="stat-content">
-                      <h3>Blog Posts</h3>
-                      <p className="stat-number">{stats.blogPosts}</p>
-                    </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-icon blog-icon"><IoMdCreate /></div>
+                  <div className="stat-info">
+                    <h3>{stats.blogPosts}</h3>
+                    <p>Blog Posts</p>
                   </div>
                 </div>
               </div>
 
-              <div className="dashboard-section">
-                <h2>Quick Actions</h2>
-                <div className="actions-grid">
-                  <div className="action-card" onClick={() => setActiveTab('admins')}>
-                    <h3>Manage Admins</h3>
-                    <p>Create and manage Admin users</p>
-                  </div>
-                  <div className="action-card" onClick={() => setActiveTab('area-managers')}>
-                    <h3>Manage Area Managers</h3>
-                    <p>Create and manage Area Managers</p>
-                  </div>
-                  <div className="action-card" onClick={() => setActiveTab('project-managers')}>
-                    <h3>Manage Project Managers</h3>
-                    <p>Create and manage Project Managers</p>
-                  </div>
-                  <div className="action-card" onClick={() => setActiveTab('social-workers')}>
-                    <h3>Manage Social Workers</h3>
-                    <p>Create and manage Social Workers</p>
-                  </div>
-                  <div className="action-card" onClick={() => setActiveTab('assignments')}>
-                    <h3>Manage Assignments</h3>
-                    <p>Assign team members to their managers</p>
-                  </div>
-                  <div className="action-card" onClick={() => setActiveTab('blog')}>
-                    <h3>Manage Blog</h3>
-                    <p>Create and edit blog posts</p>
-                  </div>
-                  <div className="action-card" onClick={() => setActiveTab('board-members')}>
-                    <h3>Manage Board</h3>
-                    <p>Add and edit board members</p>
-                  </div>
-                  <div className="action-card" onClick={() => { setActiveTab('projects'); loadProjects(); }}>
-                    <h3>Manage Projects</h3>
-                    <p>Select projects to show on home page</p>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
 
-          {activeTab === 'admins' && (
-            <div className="dashboard-section">
-              <ManageAdmins onUpdate={loadStats} />
-            </div>
-          )}
-
-          {activeTab === 'area-managers' && (
-            <div className="dashboard-section">
-              <ManageAreaManagers onUpdate={loadStats} />
-            </div>
-          )}
-
-          {activeTab === 'project-managers' && (
-            <div className="dashboard-section">
-              <ManageProjectManagers onUpdate={loadStats} />
-            </div>
-          )}
-
-          {activeTab === 'social-workers' && (
-            <div className="dashboard-section">
-              <ManageSocialWorkers onUpdate={loadStats} />
-            </div>
-          )}
-
-          {activeTab === 'assignments' && (
-            <div className="dashboard-section">
-              <ManageAssignments onUpdate={loadStats} />
-            </div>
-          )}
-
-          {activeTab === 'blog' && (
-            <div className="dashboard-section">
-              <BlogManagement onUpdate={loadStats} />
-            </div>
-          )}
-
-          {activeTab === 'board-members' && (
-            <div className="dashboard-section">
-              <ManageBoardMembers onUpdate={loadStats} />
             </div>
           )}
 
           {activeTab === 'projects' && (
-            <div className="dashboard-section">
+            <div className="projects-section">
               <div className="section-header">
-                <div>
-                  <h2>Manage Projects</h2>
-                  <p className="section-description">
-                    Create projects and select which ones should be displayed on the home page.
-                  </p>
-                </div>
-                <button
-                  className="btn-primary"
-                  onClick={() => setShowProjectForm(true)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                >
+                <h2>Manage Projects</h2>
+                <button className="btn-primary" onClick={() => {
+                  loadProjects();
+                  setShowProjectForm(true);
+                }}>
                   <IoMdAdd /> Create Project
                 </button>
               </div>
 
-              <div className="manage-section">
-                {loadingProjects ? (
-                  <p>Loading projects...</p>
-                ) : projects.length === 0 ? (
-                  <p className="info-text">No projects found. Create projects first to display them on the home page.</p>
-                ) : (
-                  <div className="projects-list">
-                    {projects.map(project => (
-                      <div key={project.id} className="project-item" style={{
-                        padding: '1rem',
-                        border: '1px solid #ddd',
-                        borderRadius: '8px',
-                        marginBottom: '1rem',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        backgroundColor: project.show_on_home ? '#f0f9ff' : '#fff'
-                      }}>
-                        <div style={{ flex: 1 }}>
-                          <h4 style={{ margin: '0 0 0.5rem 0' }}>{project.title}</h4>
-                          <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>
-                            Category: {project.category} | Status: {project.status}
-                          </p>
-                        </div>
-                        <button
-                          className={project.show_on_home ? 'btn-success' : 'btn-secondary'}
-                          onClick={() => handleToggleHomeStatus(project.id, project.show_on_home)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            minWidth: '150px',
-                            justifyContent: 'center'
-                          }}
-                        >
-                          {project.show_on_home ? (
-                            <>
-                              <IoMdCheckmark /> Showing on Home
-                            </>
-                          ) : (
-                            <>
-                              <IoMdHome /> Show on Home
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {loadingProjects ? (
+                <p>Loading projects...</p>
+              ) : (
+                <div className="projects-list">
+                  {projects.length === 0 ? (
+                    <p>No projects found.</p>
+                  ) : (
+                    <div className="table-container">
+                      <table className="data-table">
+                        <thead>
+                          <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Location</th>
+                            <th>Home Page</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {projects.map(project => (
+                            <tr key={project.id}>
+                              <td>{project.title}</td>
+                              <td>
+                                <span className={`category-badge ${project.category.toLowerCase()}`}>
+                                  {project.category}
+                                </span>
+                              </td>
+                              <td>
+                                <span className={`status-badge ${project.status}`}>
+                                  {project.status}
+                                </span>
+                              </td>
+                              <td>{project.location || '-'}</td>
+                              <td>
+                                <button
+                                  className={`btn-icon ${project.show_on_home ? 'active' : ''}`}
+                                  onClick={() => handleToggleHomeStatus(project.id, project.show_on_home)}
+                                  title={project.show_on_home ? "Remove from Home" : "Show on Home"}
+                                >
+                                  {project.show_on_home ? (
+                                    <>
+                                      <IoMdCheckmark /> On Home
+                                    </>
+                                  ) : (
+                                    <>
+                                      <IoMdHome /> Show on Home
+                                    </>
+                                  )}
+                                </button>
+                              </td>
+                              <td>
+                                <button className="btn-small btn-secondary">Edit</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
+
+          {activeTab === 'admins' && <ManageAdmins />}
+          {activeTab === 'area-managers' && <ManageAreaManagers />}
+          {activeTab === 'project-managers' && <ManageProjectManagers />}
+          {activeTab === 'social-workers' && <ManageSocialWorkers />}
+          {activeTab === 'assignments' && <ManageAssignments />}
+          {activeTab === 'board-members' && <ManageBoardMembers />}
+          {activeTab === 'blog' && <BlogManagement onUpdate={loadStats} />}
         </div>
 
         {/* Create Project Modal */}
@@ -502,8 +444,8 @@ const AdminDashboard = () => {
                       required
                     >
                       <option value="social">Social</option>
-                      <option value="economy">Economy</option>
-                      <option value="education">Education</option>
+                      <option value="economic">Economic</option>
+                      <option value="educational">Educational</option>
                     </select>
                   </div>
 
@@ -550,6 +492,19 @@ const AdminDashboard = () => {
 
                 <div className="form-row">
                   <div className="form-group">
+                    <label>Area Manager</label>
+                    <select
+                      value={newProject.area_manager_id}
+                      onChange={(e) => setNewProject({ ...newProject, area_manager_id: e.target.value })}
+                    >
+                      <option value="">Select Area Manager</option>
+                      {areaManagers.map(am => (
+                        <option key={am.id} value={am.id}>{am.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
                     <label>Project Manager</label>
                     <select
                       value={newProject.project_manager_id}
@@ -577,41 +532,35 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Project Images</label>
+                  <label>Images</label>
                   <input
                     type="file"
-                    accept="image/*"
                     multiple
+                    accept="image/*"
                     onChange={handleImageUpload}
                   />
-                  {newProject.images.length > 0 && (
-                    <div style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
-                      {newProject.images.length} image(s) selected
-                    </div>
-                  )}
+                  <div className="image-previews" style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                    {newProject.images.map((img, index) => (
+                      <img key={index} src={img} alt={`Preview ${index}`} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} />
+                    ))}
+                  </div>
                 </div>
 
                 <div className="form-actions">
+                  <button type="button" className="btn-secondary" onClick={() => setShowProjectForm(false)}>
+                    Cancel
+                  </button>
                   <button type="submit" className="btn-primary">
                     Create Project
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setShowProjectForm(false)}
-                  >
-                    Cancel
                   </button>
                 </div>
               </form>
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
 };
 
 export default AdminDashboard;
-

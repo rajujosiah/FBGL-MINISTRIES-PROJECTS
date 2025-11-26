@@ -1,0 +1,390 @@
+.project-detail-page {
+    padding: 2rem 0 4rem;
+    background-color: #f8f9fa;
+    min-height: 80vh;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+    padding: 0;
+}
+
+.back-btn:hover {
+    color: #1a237e;
+}
+
+/* Carousel Styles */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background-color: #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-slide {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: #000;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.carousel-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    color: #adb5bd;
+    font-size: 5rem;
+    font-weight: bold;
+    position: relative;
+}
+
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: background 0.3s;
+    z-index: 2;
+}
+
+.carousel-control:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-control.prev {
+    left: 1rem;
+}
+
+.carousel-control.next {
+    right: 1rem;
+}
+
+.carousel-indicators {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
+}
+
+.indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.indicator.active {
+    background: white;
+}
+
+.carousel-slide .status-badge,
+.carousel-placeholder .status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Content Layout */
+.project-content-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 992px) {
+    .project-content-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Main Info */
+.project-header {
+    margin-bottom: 2rem;
+}
+
+.category-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.category-tag.social {
+    background-color: #4CAF50;
+}
+
+.category-tag.economy,
+.category-tag.economic {
+    background-color: #2196F3;
+}
+
+.category-tag.education,
+.category-tag.educational {
+    background-color: #FF9800;
+}
+
+.project-header h1 {
+    font-size: 2.5rem;
+    color: #1a237e;
+    margin: 0.5rem 0;
+}
+
+.meta-info {
+    display: flex;
+    gap: 1.5rem;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.project-description-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.project-description-section h2 {
+    color: #1a237e;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.project-description-section p {
+    line-height: 1.8;
+    color: #444;
+}
+
+.project-highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.highlight-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #1a237e;
+}
+
+.highlight-item h3 {
+    font-size: 1.1rem;
+    color: #1a237e;
+    margin-bottom: 0.5rem;
+}
+
+.highlight-item p {
+    margin: 0;
+    color: #555;
+}
+
+/* Sidebar */
+.sidebar-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-card h3 {
+    color: #1a237e;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.team-member-item {
+    margin-bottom: 1rem;
+}
+
+.team-member-item:last-child {
+    margin-bottom: 0;
+}
+
+.role-label {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.member-link {
+    color: #1a237e;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.05rem;
+}
+
+.member-link:hover {
+    text-decoration: underline;
+}
+
+.action-card {
+    text-align: center;
+    background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+}
+
+.action-card p {
+    margin-bottom: 1.5rem;
+    color: #666;
+}
+
+.full-width {
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
+/* Management Section */
+.management-section {
+    background: #e3f2fd;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid #bbdefb;
+}
+
+.management-section h2 {
+    color: #0d47a1;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    border-bottom: 1px solid #bbdefb;
+    padding-bottom: 0.5rem;
+}
+
+.management-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.status-controls,
+.upload-controls {
+    flex: 1;
+    min-width: 250px;
+}
+
+.status-controls h3,
+.upload-controls h3 {
+    font-size: 1rem;
+    color: #1565c0;
+    margin-bottom: 0.75rem;
+}
+
+.status-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-status {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-status:hover:not(:disabled) {
+    background: #f5f5f5;
+}
+
+.btn-status.active {
+    background: #2196f3;
+    color: white;
+    border-color: #1976d2;
+    font-weight: 600;
+}
+
+.btn-status:disabled {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.file-input-wrapper {
+    position: relative;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-input-wrapper label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #1a237e;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.file-input-wrapper label:hover {
+    background-color: #0d47a1;
+}

@@ -702,31 +702,7 @@ export const deleteProject = async (id) => {
   }
 };
 
-// Get projects that should be shown on home page
-export const getHomePageProjects = async () => {
-  try {
-    const { data, error } = await supabase
-      .from('projects')
-      .select(`
-        *,
-        social_worker:social_workers(name),
-        project_manager:project_managers(name)
-      `)
-      .eq('show_on_home', true)
-      .order('created_at', { ascending: false });
 
-    if (error) {
-      handleSupabaseError(error, 'fetch home page projects');
-    }
-
-    return data || [];
-  } catch (error) {
-    if (error instanceof ConnectionError) {
-      throw error;
-    }
-    handleSupabaseError(error, 'fetch home page projects');
-  }
-};
 
 // Toggle show_on_home status for a project
 export const toggleProjectHomeStatus = async (id, showOnHome) => {
@@ -1338,25 +1314,7 @@ export const updateSiteSettings = async (settings) => {
   }
 };
 
-// PROJECTS - Show on Home Toggle
-// ============================================================================
-export const toggleProjectHomeStatus = async (projectId, showOnHome) => {
-  try {
-    const { data, error } = await supabase
-      .from('projects')
-      .update({ show_on_home: showOnHome })
-      .eq('id', projectId)
-      .select();
 
-    if (error) {
-      handleSupabaseError(error, 'toggle project home status');
-    }
-
-    return data?.[0] || null;
-  } catch (error) {
-    handleSupabaseError(error, 'toggle project home status');
-  }
-};
 
 export const getHomePageProjects = async () => {
   try {

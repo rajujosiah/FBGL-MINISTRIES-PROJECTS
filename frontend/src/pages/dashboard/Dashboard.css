@@ -987,47 +987,6 @@ input:checked+.slider:before {
 .category-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-
-.category-badge.social {
-  background: #e0f2fe;
-  color: #0284c7;
-}
-
-.category-badge.economic {
-  background: #f0fdf4;
-  color: #16a34a;
-}
-
-.category-badge.educational {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-transition: all 0.3s ease;
-}
-
-.project-images-grid img:hover {
-  transform: scale(1.05);
-  border-color: #1e3c72;
-}
-
-.images-count {
-  color: #666;
-  font-size: 0.9rem;
-  text-align: center;
-  margin: 0.5rem 0 0 0;
-  font-weight: 600;
-}
-
-.no-images {
-  color: #999;
-  font-size: 0.9rem;
-  text-align: center;
-  font-style: italic;
   margin: 0;
 }
 
@@ -1193,49 +1152,6 @@ transition: all 0.3s ease;
   }
 
   .stat-icon-wrapper .stat-icon {
-    width: 60px;
-    height: 60px;
-    font-size: 2rem;
-  }
-
-  .category-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .section-subheader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .project-card-details-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .team-life-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .reports-container {
-    grid-template-columns: 1fr;
-  }
-
-  /* Enhanced Stat Cards */
-  .enhanced-stat-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border: 2px solid #e0e0e0;
-    border-radius: 16px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .enhanced-stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
     right: 0;
     height: 4px;
     background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);

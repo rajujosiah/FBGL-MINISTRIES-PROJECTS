@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getBlogPosts, initializeData, getHomePageProjects } from '../utils/dataManager';
+import { getBlogPosts, initializeData } from '../utils/dataManager';
 import { IoMdPeople, IoMdBriefcase, IoMdSchool, IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 import './Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
   const [blogPosts, setBlogPosts] = useState([]);
-  const [homeProjects, setHomeProjects] = useState([]);
+
   const [currentBlogPage, setCurrentBlogPage] = useState(0);
   const blogsPerPage = 3;
 
@@ -21,17 +21,7 @@ const Home = () => {
       }
     };
 
-    const loadHomeProjects = async () => {
-      try {
-        const projects = await getHomePageProjects();
-        setHomeProjects(projects);
-      } catch (error) {
-        console.error('Error loading home projects:', error);
-      }
-    };
-
     loadBlogPosts();
-    loadHomeProjects();
   }, []);
 
   const nextBlogPage = () => {
@@ -150,43 +140,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Projects */}
-      {homeProjects.length > 0 && (
-        <section className="blog-section">
-          <div className="container">
-            <h2>Our Featured Projects</h2>
-            <p className="blog-section-subtitle">Discover the impactful work we're doing in communities</p>
-            <div className="blog-grid">
-              {homeProjects.map(project => (
-                <article key={project.id} className="blog-card" onClick={() => navigate(`/projects`)}>
-                  {project.images && project.images.length > 0 && (
-                    <div className="blog-card-image">
-                      <img src={project.images[0]} alt={project.title} />
-                    </div>
-                  )}
-                  <div className="blog-card-content">
-                    <h3 className="blog-card-title-only">{project.title}</h3>
-                    <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1rem' }}>
-                      {project.description.substring(0, 100)}...
-                    </p>
-                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                      <span className="role-badge" style={{ fontSize: '0.8rem' }}>
-                        {project.category}
-                      </span>
-                      <span className="role-badge" style={{ fontSize: '0.8rem', backgroundColor: project.status === 'completed' ? '#10b981' : '#f59e0b' }}>
-                        {project.status}
-                      </span>
-                    </div>
-                    <Link to="/projects" className="blog-read-more-btn" onClick={(e) => e.stopPropagation()}>
-                      View All Projects
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+
 
       {/* Blog Section */}
       {blogPosts.length > 0 && (

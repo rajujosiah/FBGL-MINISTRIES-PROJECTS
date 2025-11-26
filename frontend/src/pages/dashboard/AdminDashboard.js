@@ -19,10 +19,11 @@ import ManageSocialWorkers from '../../components/admin/ManageSocialWorkers';
 import ManageAssignments from '../../components/admin/ManageAssignments';
 import ManageBoardMembers from '../../components/admin/ManageBoardMembers';
 import BlogManagement from '../../components/admin/BlogManagement';
+import Reports from '../../components/admin/Reports';
 import ProfileModal from '../../components/ProfileModal';
 import ConnectionError from '../../components/ConnectionError';
 import { ConnectionError as DataConnectionError } from '../../utils/dataManager';
-import { IoMdPerson, IoMdBriefcase, IoMdPeople, IoMdDocument, IoMdCreate, IoMdKey, IoMdHome, IoMdCheckmark, IoMdAdd, IoMdClose } from 'react-icons/io';
+import { IoMdPerson, IoMdBriefcase, IoMdPeople, IoMdDocument, IoMdCreate, IoMdKey, IoMdHome, IoMdCheckmark, IoMdAdd, IoMdClose, IoMdDownload } from 'react-icons/io';
 import './Dashboard.css';
 
 const AdminDashboard = () => {
@@ -290,6 +291,12 @@ const AdminDashboard = () => {
           >
             Blog Posts
           </button>
+          <button
+            className={activeTab === 'reports' ? 'active' : ''}
+            onClick={() => setActiveTab('reports')}
+          >
+            Reports
+          </button>
         </div>
 
         <div className="dashboard-content">
@@ -450,6 +457,7 @@ const AdminDashboard = () => {
           {activeTab === 'assignments' && <ManageAssignments />}
           {activeTab === 'board-members' && <ManageBoardMembers />}
           {activeTab === 'blog' && <BlogManagement onUpdate={loadStats} />}
+          {activeTab === 'reports' && <Reports />}
         </div>
 
         {/* Create Project Modal */}

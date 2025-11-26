@@ -1299,6 +1299,92 @@ export const loginUser = async (username, password) => {
   }
 };
 
+// SITE SETTINGS
+// ============================================================================
+export const getSiteSettings = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('*')
+      .eq('id', 1)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // Ignore "Row not found" error
+      handleSupabaseError(error, 'fetch site settings');
+    }
+
+    // Default settings if not found
+    return data || { id: 1, show_all_projects_on_home: false };
+  } catch (error) {
+    handleSupabaseError(error, 'fetch site settings');
+  }
+};
+
+export const updateSiteSettings = async (settings) => {
+  try {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .upsert({ id: 1, ...settings })
+      .select()
+      .single();
+
+    if (error) {
+      handleSupabaseError(error, 'update site settings');
+    }
+
+    return data;
+  } catch (error) {
+    handleSupabaseError(error, 'update site settings');
+  }
+};
+
+// PROJECTS - Show on Home Toggle
+// ============================================================================
+export const toggleProjectHomeStatus = async (projectId, showOnHome) => {
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .update({ show_on_home: showOnHome })
+      .eq('id', projectId)
+      .select();
+
+    if (error) {
+      handleSupabaseError(error, 'toggle project home status');
+    }
+
+    return data?.[0] || null;
+  } catch (error) {
+    handleSupabaseError(error, 'toggle project home status');
+  }
+};
+
+export const getHomePageProjects = async () => {
+  try {
+    // First check site settings
+    const settings = await getSiteSettings();
+
+    let query = supabase
+      .from('projects')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    // Only filter by show_on_home if global toggle is OFF
+    if (!settings?.show_all_projects_on_home) {
+      query = query.eq('show_on_home', true);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      handleSupabaseError(error, 'fetch home page projects');
+    }
+
+    return data || [];
+  } catch (error) {
+    handleSupabaseError(error, 'fetch home page projects');
+  }
+};
+
 // INITIALIZATION
 // ============================================================================
 export const initializeData = async () => {

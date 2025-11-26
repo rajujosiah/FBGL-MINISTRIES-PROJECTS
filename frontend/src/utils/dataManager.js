@@ -498,6 +498,34 @@ export const toggleProjectHomeStatus = async (id, showOnHome) => {
   }
 };
 
+export const getSiteSettings = async () => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    return await supabaseManager.getSiteSettings();
+  } catch (error) {
+    console.error('Error fetching site settings:', error);
+    throw new ConnectionError('Failed to fetch site settings. Please check your internet connection.');
+  }
+};
+
+export const updateSiteSettings = async (settings) => {
+  if (!isSupabaseConfigured()) {
+    throw new ConnectionError('Database connection not configured. Please contact administrator.');
+  }
+
+  try {
+    const result = await supabaseManager.updateSiteSettings(settings);
+    invalidateCacheType(CACHE_TYPES.HOME_PROJECTS);
+    return result;
+  } catch (error) {
+    console.error('Error updating site settings:', error);
+    throw new ConnectionError('Failed to update site settings. Please check your internet connection.');
+  }
+};
+
 export const addProjectImages = async (projectId, images) => {
   if (!isSupabaseConfigured()) {
     throw new ConnectionError('Database connection not configured. Please contact administrator.');

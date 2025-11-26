@@ -114,6 +114,39 @@ const AdminDashboard = () => {
     }
   };
 
+  const [showAllOnHome, setShowAllOnHome] = useState(false);
+
+  useEffect(() => {
+    initializeData();
+    loadStats();
+    loadSiteSettings();
+  }, []);
+
+  const loadSiteSettings = async () => {
+    try {
+      const { getSiteSettings } = require('../../utils/dataManager');
+      const settings = await getSiteSettings();
+      setShowAllOnHome(settings.show_all_projects_on_home);
+    } catch (error) {
+      console.error('Error loading site settings:', error);
+    }
+  };
+
+  const handleToggleGlobalHome = async () => {
+    try {
+      const { updateSiteSettings } = require('../../utils/dataManager');
+      const newStatus = !showAllOnHome;
+      await updateSiteSettings({ show_all_projects_on_home: newStatus });
+      setShowAllOnHome(newStatus);
+      // Reload projects if we're on the projects tab
+      if (activeTab === 'projects') {
+        await loadProjects();
+      }
+    } catch (error) {
+      alert('Failed to update settings: ' + error.message);
+    }
+  };
+
   const handleToggleHomeStatus = async (projectId, currentStatus) => {
     try {
       await toggleProjectHomeStatus(projectId, !currentStatus);
@@ -322,12 +355,27 @@ const AdminDashboard = () => {
             <div className="projects-section">
               <div className="section-header">
                 <h2>Manage Projects</h2>
-                <button className="btn-primary" onClick={() => {
-                  loadProjects();
-                  setShowProjectForm(true);
-                }}>
-                  <IoMdAdd /> Create Project
-                </button>
+                <div className="project-actions">
+                  <div className="global-toggle-container">
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        checked={showAllOnHome}
+                        onChange={handleToggleGlobalHome}
+                      />
+                      <span className="slider round"></span>
+                    </label>
+                    <span className="toggle-label">
+                      {showAllOnHome ? 'Showing ALL Projects on Home' : 'Show Selected Projects Only'}
+                    </span>
+                  </div>
+                  <button className="btn-primary" onClick={() => {
+                    loadProjects();
+                    setShowProjectForm(true);
+                  }}>
+                    <IoMdAdd /> Create Project
+                  </button>
+                </div>
               </div>
 
               {loadingProjects ? (

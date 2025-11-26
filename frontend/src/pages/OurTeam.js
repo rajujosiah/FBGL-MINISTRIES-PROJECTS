@@ -393,7 +393,7 @@ const OurTeam = () => {
         </div>
         <div className="profile-info">
           <h3>{person.name}</h3>
-          {person.id_no && <p className="profile-id">{person.id_no}</p>}
+          {person.id_no && <p className="profile-id">{normalizeIdNo(person.id_no)}</p>}
           <p className="profile-role">{person.position || person.area_manager || 'Member'}</p>
           {person.bio && (
             <p className="profile-bio">{person.bio.substring(0, 100)}...</p>

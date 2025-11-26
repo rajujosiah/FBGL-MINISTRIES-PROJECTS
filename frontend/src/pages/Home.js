@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getBlogPosts, initializeData, getHomePageProjects } from '../utils/dataManager';
-import { IoMdPeople, IoMdBriefcase, IoMdSchool } from 'react-icons/io';
+import { IoMdPeople, IoMdBriefcase, IoMdSchool, IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 import './Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
   const [blogPosts, setBlogPosts] = useState([]);
   const [homeProjects, setHomeProjects] = useState([]);
+  const [currentBlogPage, setCurrentBlogPage] = useState(0);
+  const blogsPerPage = 3;
 
   useEffect(() => {
     const loadBlogPosts = async () => {
       await initializeData();
       const posts = await getBlogPosts();
-      // Get latest 3 blog posts
       if (Array.isArray(posts)) {
-        setBlogPosts(posts.slice(-3).reverse());
+        // Get all posts, reversed to show latest first
+        setBlogPosts(posts.reverse());
       }
     };
 
@@ -31,6 +33,24 @@ const Home = () => {
     loadBlogPosts();
     loadHomeProjects();
   }, []);
+
+  const nextBlogPage = () => {
+    if ((currentBlogPage + 1) * blogsPerPage < blogPosts.length) {
+      setCurrentBlogPage(prev => prev + 1);
+    }
+  };
+
+  const prevBlogPage = () => {
+    if (currentBlogPage > 0) {
+      setCurrentBlogPage(prev => prev - 1);
+    }
+  };
+
+  const currentBlogs = blogPosts.slice(
+    currentBlogPage * blogsPerPage,
+    (currentBlogPage + 1) * blogsPerPage
+  );
+
   return (
     <div className="home">
       {/* Hero Banner */}
@@ -50,7 +70,7 @@ const Home = () => {
 
       {/* Welcome Message */}
       <section className="welcome-section">
-        <div className="container">
+        <div className="welcome-section-content">
           <h2>Welcome Message</h2>
           <p className="welcome-text">
             Welcome to FIRST BORN GOSPEL LIFE MINISTRIES, a faith-based non-profit organization
@@ -174,28 +194,42 @@ const Home = () => {
           <div className="container">
             <h2>Latest News & Updates</h2>
             <p className="blog-section-subtitle">Stay updated with our latest activities and news</p>
-            <div className="blog-grid">
-              {blogPosts.map(post => (
-                <article key={post.id} className="blog-card" onClick={() => navigate(`/blog/${post.id}`)}>
-                  {post.featured_image && (
-                    <div className="blog-card-image">
-                      <img src={post.featured_image} alt={post.title} />
+
+            <div className="blog-carousel-container">
+              {currentBlogPage > 0 && (
+                <button className="carousel-nav-btn prev" onClick={prevBlogPage}>
+                  <IoMdArrowBack />
+                </button>
+              )}
+
+              <div className="blog-grid">
+                {currentBlogs.map(post => (
+                  <article key={post.id} className="blog-card" onClick={() => navigate(`/blog/${post.id}`)}>
+                    {post.featured_image && (
+                      <div className="blog-card-image">
+                        <img src={post.featured_image} alt={post.title} />
+                      </div>
+                    )}
+                    <div className="blog-card-content">
+                      <h3 className="blog-card-title-only">{post.title}</h3>
+                      <Link to={`/blog/${post.id}`} className="blog-read-more-btn" onClick={(e) => e.stopPropagation()}>
+                        Read More
+                      </Link>
                     </div>
-                  )}
-                  <div className="blog-card-content">
-                    <h3 className="blog-card-title-only">{post.title}</h3>
-                    <Link to={`/blog/${post.id}`} className="blog-read-more-btn" onClick={(e) => e.stopPropagation()}>
-                      Read More
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-            {blogPosts.length >= 3 && (
-              <div className="blog-section-cta">
-                <Link to="/blog" className="btn btn-primary">View All Blog Posts</Link>
+                  </article>
+                ))}
               </div>
-            )}
+
+              {(currentBlogPage + 1) * blogsPerPage < blogPosts.length && (
+                <button className="carousel-nav-btn next" onClick={nextBlogPage}>
+                  <IoMdArrowForward />
+                </button>
+              )}
+            </div>
+
+            <div className="blog-section-cta">
+              <Link to="/blog" className="btn btn-primary">View All Blog Posts</Link>
+            </div>
           </div>
         </section>
       )}

@@ -103,6 +103,11 @@
 }
 
 .welcome-section {
+  display: flex;
+  margin: 0 auto;
+  padding: 0 2rem;
+  flex-direction: column;
+  align-items: center;
   padding: 3rem 0;
   background: white;
 }

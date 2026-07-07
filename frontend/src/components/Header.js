@@ -59,7 +59,7 @@ const Header = () => {
             <p className="tagline">Transforming Lives through Social, Economic & Educational Empowerment</p>
           </div>
         </div>
-        
+
         <button className="mobile-menu-toggle" onClick={toggleMenu} aria-label="Toggle menu">
           <span></span>
           <span></span>

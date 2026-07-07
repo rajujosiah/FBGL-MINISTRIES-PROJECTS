@@ -158,35 +158,50 @@ const createUser = async (userData, tableName) => {
       handleSupabaseError(authError || new Error('Failed to create auth user'), `create auth user for ${tableName}`);
     }
 
-    // Insert the user profile into the public table, linking it to the auth user
-    // Insert the user profile into the public table
-    // IMPORTANT: The tables (area_managers, etc.) use BIGINT for 'id', but authUser.id is a UUID.
-    // We CANNOT set 'id' to authUser.id. We must let the database auto-generate the BIGINT 'id'.
-    // We should store the auth_user_id in a separate column if the schema supports it, 
-    // or rely on email matching if that's how the app is designed.
-
+    // Insert the user profile into the profiles table with role
+    // The profiles table is the single source of truth for all user types
     const profileData = {
       ...userData,
-      // id: authUser.id, // REMOVED: Do not force UUID into BIGINT column
-      // auth_user_id: authUser.id, // Optional: Add this if you add an 'auth_user_id' column to your tables
+      role: tableName.slice(0, -1), // Remove 's' from table name to get role (e.g., 'area_managers' -> 'area_manager')
       created_at: new Date().toISOString()
     };
     delete profileData.password; // Do not store password in public table
 
+    console.log(`📝 Attempting to insert into profiles table with role '${profileData.role}':`, {
+      ...profileData,
+      profile_picture: profileData.profile_picture ? `${profileData.profile_picture.substring(0, 50)}...` : 'none'
+    });
+
     const { data, error } = await supabase
-      .from(tableName)
+      .from('profiles')
       .insert([profileData])
       .select()
       .single();
 
     if (error) {
+      console.error(`❌ Failed to insert into profiles table with role '${profileData.role}':`, error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       // If DB insert fails, we should ideally delete the auth user, but we can't without admin rights
       // So we just report the error
       handleSupabaseError(error, `add ${tableName}`);
     }
 
+    console.log(`✅ Successfully inserted into profiles table with role '${profileData.role}':`, {
+      id: data?.id,
+      name: data?.name,
+      email: data?.email,
+      id_no: data?.id_no,
+      role: data?.role
+    });
+
     return data;
   } catch (error) {
+    console.error(`❌ Error in createUser for ${tableName}:`, error);
     if (error instanceof ConnectionError) {
       throw error;
     }
@@ -201,8 +216,9 @@ const createUser = async (userData, tableName) => {
 export const getAreaManagers = async () => {
   try {
     const { data, error } = await supabase
-      .from('area_managers')
+      .from('profiles')
       .select('*')
+      .eq('role', 'area_manager')
       .order('id_no', { ascending: true });
 
     if (error) {
@@ -223,8 +239,9 @@ export const getAreaManagers = async () => {
 export const getAreaManagerById = async (id) => {
   try {
     const { data, error } = await supabase
-      .from('area_managers')
+      .from('profiles')
       .select('*')
+      .eq('role', 'area_manager')
       .eq('id', id)
       .single();
 
@@ -253,10 +270,10 @@ export const updateAreaManager = async (id, updates) => {
     }
 
     const { data, error } = await supabase
-      .from('area_managers')
+      .from('profiles')
       .update(updatesToApply)
+      .eq('role', 'area_manager')
       .eq('id', id)
-      .select()
       .select();
 
     if (error) {
@@ -275,8 +292,9 @@ export const updateAreaManager = async (id, updates) => {
 export const deleteAreaManager = async (id) => {
   try {
     const { error } = await supabase
-      .from('area_managers')
+      .from('profiles')
       .delete()
+      .eq('role', 'area_manager')
       .eq('id', id);
 
     if (error) {
@@ -306,8 +324,9 @@ export const assignStateDistrictToAreaManager = async (areaManagerId, state, dis
 export const getProjectManagers = async (areaManagerId = null) => {
   try {
     let query = supabase
-      .from('project_managers')
-      .select('*');
+      .from('profiles')
+      .select('*')
+      .eq('role', 'project_manager');
 
     if (areaManagerId) {
       query = query.eq('area_manager_id', areaManagerId);
@@ -331,8 +350,9 @@ export const getProjectManagers = async (areaManagerId = null) => {
 export const getProjectManagerById = async (id) => {
   try {
     const { data, error } = await supabase
-      .from('project_managers')
+      .from('profiles')
       .select('*')
+      .eq('role', 'project_manager')
       .eq('id', id)
       .single();
 
@@ -366,10 +386,10 @@ export const updateProjectManager = async (id, updates) => {
     }
 
     const { data, error } = await supabase
-      .from('project_managers')
+      .from('profiles')
       .update(updatesToApply)
+      .eq('role', 'project_manager')
       .eq('id', id)
-      .select()
       .select();
 
     if (error) {
@@ -388,8 +408,9 @@ export const updateProjectManager = async (id, updates) => {
 export const deleteProjectManager = async (id) => {
   try {
     const { error } = await supabase
-      .from('project_managers')
+      .from('profiles')
       .delete()
+      .eq('role', 'project_manager')
       .eq('id', id);
 
     if (error) {
@@ -440,8 +461,9 @@ export const assignProjectToProjectManager = async (projectId, projectManagerId)
 export const getSocialWorkers = async (projectManagerId = null) => {
   try {
     let query = supabase
-      .from('social_workers')
-      .select('*');
+      .from('profiles')
+      .select('*')
+      .eq('role', 'social_worker');
 
     if (projectManagerId) {
       query = query.eq('project_manager_id', projectManagerId);
@@ -465,8 +487,9 @@ export const getSocialWorkers = async (projectManagerId = null) => {
 export const getSocialWorkerById = async (id) => {
   try {
     const { data, error } = await supabase
-      .from('social_workers')
+      .from('profiles')
       .select('*')
+      .eq('role', 'social_worker')
       .eq('id', id)
       .single();
 
@@ -500,10 +523,10 @@ export const updateSocialWorker = async (id, updates) => {
     }
 
     const { data, error } = await supabase
-      .from('social_workers')
+      .from('profiles')
       .update(updatesToApply)
+      .eq('role', 'social_worker')
       .eq('id', id)
-      .select()
       .select();
 
     if (error) {
@@ -522,8 +545,9 @@ export const updateSocialWorker = async (id, updates) => {
 export const deleteSocialWorker = async (id) => {
   try {
     const { error } = await supabase
-      .from('social_workers')
+      .from('profiles')
       .delete()
+      .eq('role', 'social_worker')
       .eq('id', id);
 
     if (error) {
@@ -859,8 +883,9 @@ export const deleteBlogPost = async (id) => {
 export const getBoardMembers = async () => {
   try {
     const { data, error } = await supabase
-      .from('board_members')
+      .from('profiles')
       .select('*')
+      .eq('role', 'board_member')
       .order('created_at', { ascending: true });
 
     if (error) {
@@ -876,12 +901,23 @@ export const getBoardMembers = async () => {
   }
 };
 
+// ... (skipping other functions)
+
+
+
 export const addBoardMember = async (member) => {
   try {
+    // Generate a random UUID for board members since they don't have auth accounts
+    const id = crypto.randomUUID();
+
     const { data, error } = await supabase
-      .from('board_members')
+      .from('profiles')
       .insert([{
+        id,
         ...member,
+        role: 'board_member',
+        state_code: 'KA', // Default required fields
+        district_code: 'BLR',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }])
@@ -904,20 +940,21 @@ export const addBoardMember = async (member) => {
 export const updateBoardMember = async (id, updates) => {
   try {
     const { data, error } = await supabase
-      .from('board_members')
+      .from('profiles')
       .update({
         ...updates,
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
+      .eq('role', 'board_member') // Safety check
       .select()
-      .select();
+      .single(); // Fixed: removed double .select()
 
     if (error) {
       handleSupabaseError(error, 'update board member');
     }
 
-    return data?.[0];
+    return data;
   } catch (error) {
     if (error instanceof ConnectionError) {
       throw error;
@@ -930,9 +967,10 @@ export const deleteBoardMember = async (id) => {
   try {
     console.log('Attempting to delete board member with ID:', id);
     const { data, error } = await supabase
-      .from('board_members')
+      .from('profiles')
       .delete()
       .eq('id', id)
+      .eq('role', 'board_member') // Safety check
       .select();
 
     if (error) {
@@ -1014,8 +1052,9 @@ export const addStateDistrict = async (stateDistrict) => {
 export const getAdmins = async () => {
   try {
     const { data, error } = await supabase
-      .from('admins')
+      .from('profiles')
       .select('*')
+      .eq('role', 'admin')
       .order('created_at', { ascending: true });
 
     if (error) {
@@ -1048,10 +1087,17 @@ export const updateAdmin = async (id, updates) => {
       delete updatesToApply.password;
     }
 
+    // Note: Password update in auth.users is not handled here, only profile update
+    // To update password, we would need admin privileges or use the auth update API
+
     const { data, error } = await supabase
-      .from('admins')
-      .update(updatesToApply)
+      .from('profiles')
+      .update({
+        ...updatesToApply,
+        updated_at: new Date().toISOString()
+      })
       .eq('id', id)
+      .eq('role', 'admin') // Safety check
       .select()
       .single();
 
@@ -1070,10 +1116,13 @@ export const updateAdmin = async (id, updates) => {
 
 export const deleteAdmin = async (id) => {
   try {
+    // Note: This only deletes the profile. The auth user remains but effectively disabled/hidden.
+    // To delete auth user, we need service role key and admin API.
     const { error } = await supabase
-      .from('admins')
+      .from('profiles')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('role', 'admin'); // Safety check
 
     if (error) {
       handleSupabaseError(error, 'delete admin');
@@ -1357,7 +1406,7 @@ export const initializeData = async () => {
 
   // Test connection
   try {
-    const { data, error } = await supabase.from('area_managers').select('id').limit(1);
+    const { data, error } = await supabase.from('profiles').select('id').limit(1);
     if (error) {
       throw new ConnectionError('Failed to connect to Supabase. Please check your internet connection and try again.');
     }

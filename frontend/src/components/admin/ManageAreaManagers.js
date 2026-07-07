@@ -102,6 +102,7 @@ const ManageAreaManagers = ({ onUpdate }) => {
     try {
       setConnectionError(null);
       if (selectedManager) {
+        console.log('🔄 Updating existing Area Manager:', selectedManager.id);
         await updateAreaManager(selectedManager.id, formData);
       } else {
         // Generate ID No
@@ -119,13 +120,23 @@ const ManageAreaManagers = ({ onUpdate }) => {
         const password = formData.password || Math.random().toString(36).slice(-8);
         setGeneratedPassword(password);
 
-        await addAreaManager({
+        const newAreaManager = {
           ...formData,
           id_no,
           profile_picture: profilePicture,
-          area_manager: `${formData.state} - ${formData.district}`,
           password: password
+        };
+
+        console.log('➕ Creating new Area Manager with data:', {
+          name: newAreaManager.name,
+          email: newAreaManager.email,
+          id_no: newAreaManager.id_no,
+          state: newAreaManager.state,
+          district: newAreaManager.district
         });
+
+        const result = await addAreaManager(newAreaManager);
+        console.log('✅ Area Manager created successfully:', result);
       }
       setShowForm(false);
       setShowForm(false);
@@ -135,6 +146,7 @@ const ManageAreaManagers = ({ onUpdate }) => {
       await loadAreaManagers();
       onUpdate?.();
     } catch (error) {
+      console.error('❌ Error saving Area Manager:', error);
       if (error instanceof DataConnectionError) {
         setConnectionError(error.message);
       } else {

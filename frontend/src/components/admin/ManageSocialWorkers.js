@@ -38,6 +38,8 @@ const ManageSocialWorkers = ({ onUpdate }) => {
   const [connectionError, setConnectionError] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -60,6 +62,14 @@ const ManageSocialWorkers = ({ onUpdate }) => {
       setSocialWorkers([]);
       setProjectManagers([]);
     }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Password copied to clipboard!');
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
   };
 
   const handleStateChange = (state) => {
@@ -108,8 +118,11 @@ const ManageSocialWorkers = ({ onUpdate }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       setConnectionError(null);
+      let passwordToDisplay = null;
+
       if (selectedWorker) {
         await updateSocialWorker(selectedWorker.id, formData);
       } else {
@@ -126,7 +139,7 @@ const ManageSocialWorkers = ({ onUpdate }) => {
 
         // Use provided password or generate one if empty (fallback)
         const password = formData.password || Math.random().toString(36).slice(-8);
-        setGeneratedPassword(password);
+        passwordToDisplay = password;
 
 
         await addSocialWorker({
@@ -137,6 +150,8 @@ const ManageSocialWorkers = ({ onUpdate }) => {
           password: password
         });
       }
+
+      // Close form FIRST
       setShowForm(false);
       setFormData({
         name: '',
@@ -153,6 +168,12 @@ const ManageSocialWorkers = ({ onUpdate }) => {
       });
       setSelectedWorker(null);
       setAvailableDistricts([]);
+
+      // Then show password modal if applicable
+      if (passwordToDisplay) {
+        setGeneratedPassword(passwordToDisplay);
+      }
+
       await loadData();
       onUpdate?.();
     } catch (error) {
@@ -161,6 +182,8 @@ const ManageSocialWorkers = ({ onUpdate }) => {
       } else {
         setConnectionError('Failed to save social worker. Please check your internet connection.');
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -228,7 +251,7 @@ const ManageSocialWorkers = ({ onUpdate }) => {
       )}
 
       {generatedPassword && (
-        <div className="form-modal">
+        <div className="form-modal" style={{ zIndex: 2000 }}>
           <div className="form-modal-content">
             <div className="form-modal-header">
               <h3>Social Worker Created</h3>
@@ -236,7 +259,18 @@ const ManageSocialWorkers = ({ onUpdate }) => {
             <div style={{ padding: '1.5rem' }}>
               <p>The social worker has been created successfully.</p>
               <p>Please share the following password with the user:</p>
-              <p style={{ fontWeight: 'bold', marginTop: '1rem' }}>{generatedPassword}</p>
+              <div className="password-display">
+                <p style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{generatedPassword}</p>
+                <button
+                  type="button"
+                  className="btn-icon"
+                  onClick={() => copyToClipboard(generatedPassword)}
+                  title="Copy Password"
+                  style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}
+                >
+                  📋
+                </button>
+              </div>
             </div>
             <div className="form-actions">
               <button className="btn-primary" onClick={() => setGeneratedPassword(null)}>Close</button>

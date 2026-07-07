@@ -49,51 +49,51 @@ export const initializeRealtimeSubscriptions = () => {
         .subscribe();
     subscriptions.push(blogSub);
 
-    // Subscribe to AREA_MANAGERS changes
+    // Subscribe to AREA_MANAGERS changes (in profiles table)
     const areaManagersSub = supabase
-        .channel('public:area_managers')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'area_managers' }, (payload) => {
-            console.log('🔄 Realtime update: AREA_MANAGERS', payload);
+        .channel('public:profiles:area_managers')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: 'role=eq.area_manager' }, (payload) => {
+            console.log('🔄 Realtime update: AREA_MANAGERS (profiles)', payload);
             invalidateCacheType(CACHE_TYPES.AREA_MANAGERS);
         })
         .subscribe();
     subscriptions.push(areaManagersSub);
 
-    // Subscribe to PROJECT_MANAGERS changes
+    // Subscribe to PROJECT_MANAGERS changes (in profiles table)
     const projectManagersSub = supabase
-        .channel('public:project_managers')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'project_managers' }, (payload) => {
-            console.log('🔄 Realtime update: PROJECT_MANAGERS', payload);
+        .channel('public:profiles:project_managers')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: 'role=eq.project_manager' }, (payload) => {
+            console.log('🔄 Realtime update: PROJECT_MANAGERS (profiles)', payload);
             invalidateCacheType(CACHE_TYPES.PROJECT_MANAGERS);
         })
         .subscribe();
     subscriptions.push(projectManagersSub);
 
-    // Subscribe to SOCIAL_WORKERS changes
+    // Subscribe to SOCIAL_WORKERS changes (in profiles table)
     const socialWorkersSub = supabase
-        .channel('public:social_workers')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'social_workers' }, (payload) => {
-            console.log('🔄 Realtime update: SOCIAL_WORKERS', payload);
+        .channel('public:profiles:social_workers')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: 'role=eq.social_worker' }, (payload) => {
+            console.log('🔄 Realtime update: SOCIAL_WORKERS (profiles)', payload);
             invalidateCacheType(CACHE_TYPES.SOCIAL_WORKERS);
         })
         .subscribe();
     subscriptions.push(socialWorkersSub);
 
-    // Subscribe to BOARD_MEMBERS changes
+    // Subscribe to BOARD_MEMBERS changes (in profiles table)
     const boardMembersSub = supabase
-        .channel('public:board_members')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'board_members' }, (payload) => {
-            console.log('🔄 Realtime update: BOARD_MEMBERS', payload);
+        .channel('public:profiles:board_members')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: 'role=eq.board_member' }, (payload) => {
+            console.log('🔄 Realtime update: BOARD_MEMBERS (profiles)', payload);
             invalidateCacheType(CACHE_TYPES.BOARD_MEMBERS);
         })
         .subscribe();
     subscriptions.push(boardMembersSub);
 
-    // Subscribe to ADMINS changes
+    // Subscribe to ADMINS changes (in profiles table)
     const adminsSub = supabase
-        .channel('public:admins')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'admins' }, (payload) => {
-            console.log('🔄 Realtime update: ADMINS', payload);
+        .channel('public:profiles:admins')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: 'role=eq.admin' }, (payload) => {
+            console.log('🔄 Realtime update: ADMINS (profiles)', payload);
             invalidateCacheType(CACHE_TYPES.ADMINS);
         })
         .subscribe();

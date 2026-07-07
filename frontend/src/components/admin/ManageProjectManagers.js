@@ -38,6 +38,8 @@ const ManageProjectManagers = ({ onUpdate }) => {
   const [connectionError, setConnectionError] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -60,6 +62,14 @@ const ManageProjectManagers = ({ onUpdate }) => {
       setProjectManagers([]);
       setAreaManagers([]);
     }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Password copied to clipboard!');
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
   };
 
   const handleStateChange = (state) => {
@@ -108,9 +118,13 @@ const ManageProjectManagers = ({ onUpdate }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       setConnectionError(null);
+      let passwordToDisplay = null;
+
       if (selectedManager) {
+        console.log('🔄 Updating existing Project Manager:', selectedManager.id);
         await updateProjectManager(selectedManager.id, formData);
       } else {
         // Generate ID No
@@ -126,16 +140,30 @@ const ManageProjectManagers = ({ onUpdate }) => {
 
         // Use provided password or generate one if empty (fallback)
         const password = formData.password || Math.random().toString(36).slice(-8);
-        setGeneratedPassword(password);
+        passwordToDisplay = password;
 
-        await addProjectManager({
+        const newProjectManager = {
           ...formData,
           id_no,
           profile_picture: profilePicture,
           area_manager_id: formData.area_manager_id ? parseInt(formData.area_manager_id) : null,
           password: password
+        };
+
+        console.log('➕ Creating new Project Manager with data:', {
+          name: newProjectManager.name,
+          email: newProjectManager.email,
+          id_no: newProjectManager.id_no,
+          state: newProjectManager.state,
+          district: newProjectManager.district,
+          area_manager_id: newProjectManager.area_manager_id
         });
+
+        const result = await addProjectManager(newProjectManager);
+        console.log('✅ Project Manager created successfully:', result);
       }
+
+      // Close form FIRST
       setShowForm(false);
       setFormData({
         name: '',
@@ -152,14 +180,23 @@ const ManageProjectManagers = ({ onUpdate }) => {
       });
       setSelectedManager(null);
       setAvailableDistricts([]);
+
+      // Then show password modal if applicable
+      if (passwordToDisplay) {
+        setGeneratedPassword(passwordToDisplay);
+      }
+
       await loadData();
       onUpdate?.();
     } catch (error) {
+      console.error('❌ Error saving Project Manager:', error);
       if (error instanceof DataConnectionError) {
         setConnectionError(error.message);
       } else {
         setConnectionError('Failed to save project manager. Please check your internet connection.');
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -227,7 +264,7 @@ const ManageProjectManagers = ({ onUpdate }) => {
       )}
 
       {generatedPassword && (
-        <div className="form-modal">
+        <div className="form-modal" style={{ zIndex: 2000 }}>
           <div className="form-modal-content">
             <div className="form-modal-header">
               <h3>Project Manager Created</h3>
@@ -235,7 +272,18 @@ const ManageProjectManagers = ({ onUpdate }) => {
             <div style={{ padding: '1.5rem' }}>
               <p>The project manager has been created successfully.</p>
               <p>Please share the following password with the user:</p>
-              <p style={{ fontWeight: 'bold', marginTop: '1rem' }}>{generatedPassword}</p>
+              <div className="password-display">
+                <p style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{generatedPassword}</p>
+                <button
+                  type="button"
+                  className="btn-icon"
+                  onClick={() => copyToClipboard(generatedPassword)}
+                  title="Copy Password"
+                  style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}
+                >
+                  📋
+                </button>
+              </div>
             </div>
             <div className="form-actions">
               <button className="btn-primary" onClick={() => setGeneratedPassword(null)}>Close</button>

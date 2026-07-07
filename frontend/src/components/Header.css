@@ -230,3 +230,13 @@
     display: none;
   }
 }
+
+/* Desktop: Show logo with text, hide mobile logo */
+.mobile-logo {
+  display: none;
+}
+
+.desktop-logo,
+.desktop-text {
+  display: flex;
+}

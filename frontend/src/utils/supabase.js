@@ -9,8 +9,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // Helper functions for database operations
 export const getAreaManagers = async () => {
   const { data, error } = await supabase
-    .from('area_managers')
+    .from('profiles')
     .select('*')
+    .eq('role', 'area_manager')
     .order('id_no', { ascending: true });
 
   if (error) {
@@ -21,11 +22,16 @@ export const getAreaManagers = async () => {
 };
 
 export const getProjectManagers = async (areaManagerId) => {
-  const { data, error } = await supabase
-    .from('project_managers')
+  let query = supabase
+    .from('profiles')
     .select('*')
-    .eq('area_manager_id', areaManagerId)
-    .order('id_no', { ascending: true });
+    .eq('role', 'project_manager');
+
+  if (areaManagerId) {
+    query = query.eq('area_manager_id', areaManagerId);
+  }
+
+  const { data, error } = await query.order('id_no', { ascending: true });
 
   if (error) {
     console.error('Error fetching project managers:', error);
@@ -35,11 +41,16 @@ export const getProjectManagers = async (areaManagerId) => {
 };
 
 export const getSocialWorkers = async (projectManagerId) => {
-  const { data, error } = await supabase
-    .from('social_workers')
+  let query = supabase
+    .from('profiles')
     .select('*')
-    .eq('project_manager_id', projectManagerId)
-    .order('id_no', { ascending: true });
+    .eq('role', 'social_worker');
+
+  if (projectManagerId) {
+    query = query.eq('project_manager_id', projectManagerId);
+  }
+
+  const { data, error } = await query.order('id_no', { ascending: true });
 
   if (error) {
     console.error('Error fetching social workers:', error);
@@ -84,19 +95,36 @@ export const getBoardMembers = async () => {
 };
 
 export const getProfileById = async (type, id) => {
-  const tableMap = {
-    'area_manager': 'area_managers',
-    'project_manager': 'project_managers',
-    'social_worker': 'social_workers',
-    'board_member': 'board_members'
+  const roleMap = {
+    'area_manager': 'area_manager',
+    'project_manager': 'project_manager',
+    'social_worker': 'social_worker',
+    'board_member': 'board_member'
   };
 
-  const table = tableMap[type];
-  if (!table) return null;
+  const role = roleMap[type];
+  if (!role) return null;
 
+  // Board members are still in their own table
+  if (type === 'board_member') {
+    const { data, error } = await supabase
+      .from('board_members')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      console.error(`Error fetching ${type}:`, error);
+      return null;
+    }
+    return data;
+  }
+
+  // All other roles are in profiles table
   const { data, error } = await supabase
-    .from(table)
+    .from('profiles')
     .select('*')
+    .eq('role', role)
     .eq('id', id)
     .single();
 
@@ -108,23 +136,43 @@ export const getProfileById = async (type, id) => {
 };
 
 export const getProfileByIdNo = async (type, idNo) => {
-  const tableMap = {
-    'area_manager': 'area_managers',
-    'project_manager': 'project_managers',
-    'social_worker': 'social_workers',
-    'board_member': 'board_members'
+  const roleMap = {
+    'area_manager': 'area_manager',
+    'project_manager': 'project_manager',
+    'social_worker': 'social_worker',
+    'board_member': 'board_member'
   };
 
-  const table = tableMap[type];
-  if (!table) return null;
+  const role = roleMap[type];
+  if (!role) return null;
 
   // Normalize id_no for comparison (remove spaces and convert to uppercase)
   const normalizedIdNo = idNo.replace(/\s+/g, '').toUpperCase();
 
-  // Get all records and filter by normalized id_no (since Supabase doesn't support regex replace in queries)
+  // Board members are still in their own table
+  if (type === 'board_member') {
+    const { data, error } = await supabase
+      .from('board_members')
+      .select('*');
+
+    if (error) {
+      console.error(`Error fetching ${type} by id_no:`, error);
+      return null;
+    }
+
+    const profile = data?.find(p => {
+      const profileIdNo = (p.id_no || '').replace(/\s+/g, '').toUpperCase();
+      return profileIdNo === normalizedIdNo;
+    });
+
+    return profile || null;
+  }
+
+  // Get all records from profiles table with role filter
   const { data, error } = await supabase
-    .from(table)
-    .select('*');
+    .from('profiles')
+    .select('*')
+    .eq('role', role);
 
   if (error) {
     console.error(`Error fetching ${type} by id_no:`, error);

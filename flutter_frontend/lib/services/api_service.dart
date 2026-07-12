@@ -8,12 +8,11 @@ class ApiService {
   static String get baseUrl {
     try {
       final String? hostname = html.window.location.hostname;
-      if (hostname != null && hostname.isNotEmpty && hostname != 'localhost' && hostname != '127.0.0.1') {
-        final String protocol = html.window.location.protocol;
-        return '$protocol//$hostname/api';
+      if (hostname == 'localhost' || hostname == '127.0.0.1') {
+        return 'http://localhost:5000/api';
       }
     } catch (_) {}
-    return 'http://localhost:5000/api';
+    return 'https://fbgl-ministries-projects.vercel.app/api';
   }
 
   static String? _token;

@@ -163,42 +163,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 24),
               
-              // Dev Quick-Fill Buttons
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                alignment: WrapAlignment.center,
-                children: [
-                  ActionChip(
-                    label: const Text('Admin', style: TextStyle(fontSize: 10)),
-                    onPressed: () {
-                      _emailController.text = 'admin@fbgl.org';
-                      _passwordController.text = 'asdf1234';
-                    },
-                  ),
-                  ActionChip(
-                    label: const Text('Area Mgr', style: TextStyle(fontSize: 10)),
-                    onPressed: () {
-                      _emailController.text = 'area_manager@fbgl.org';
-                      _passwordController.text = 'asdf1234';
-                    },
-                  ),
-                  ActionChip(
-                    label: const Text('Project Mgr', style: TextStyle(fontSize: 10)),
-                    onPressed: () {
-                      _emailController.text = 'project_manager@fbgl.org';
-                      _passwordController.text = 'asdf1234';
-                    },
-                  ),
-                  ActionChip(
-                    label: const Text('Social Wrk', style: TextStyle(fontSize: 10)),
-                    onPressed: () {
-                      _emailController.text = 'social_worker@fbgl.org';
-                      _passwordController.text = 'asdf1234';
-                    },
-                  ),
-                ],
-              ),
+              // Dev Quick-Fill Buttons (Removed for Production)
               const SizedBox(height: 16),
               
               // Note for users

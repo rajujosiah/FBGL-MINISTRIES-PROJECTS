@@ -12,7 +12,7 @@ class ApiService {
         return 'http://localhost:5000/api';
       }
     } catch (_) {}
-    return 'https://fbgl-ministries-projects.vercel.app/api';
+    return 'https://fbgl-ministries-projects-backend.vercel.app/api';
   }
 
   static String? _token;

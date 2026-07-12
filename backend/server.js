@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Database Connection (MongoDB)
-const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://fbglministries2016_db_user:LuyNgH2gPY7fuOi9@cluster0.zw4qyzh.mongodb.net/fbgl?retryWrites=true&w=majority&appName=Cluster0';
+const mongoURI = process.env.MONGODB_URI || 'mongodb://fbglministries2016_db_user:LuyNgH2gPY7fuOi9@ac-sysletb-shard-00-00.zw4qyzh.mongodb.net:27017,ac-sysletb-shard-00-01.zw4qyzh.mongodb.net:27017,ac-sysletb-shard-00-02.zw4qyzh.mongodb.net:27017/fbgl?ssl=true&replicaSet=atlas-zl7r5s-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0';
 const localMongoURI = 'mongodb://127.0.0.1:27017/fbgl';
 
 mongoose.connect(mongoURI)

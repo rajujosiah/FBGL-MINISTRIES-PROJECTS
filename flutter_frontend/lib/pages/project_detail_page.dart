@@ -185,7 +185,8 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
               spacing: 16,
               runSpacing: 12,
               alignment: WrapAlignment.spaceBetween,
-              crossAlignment: WrapCrossAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+
               children: [
                 TextButton.icon(
                   onPressed: () => context.go('/projects'),

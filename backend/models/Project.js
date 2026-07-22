@@ -54,4 +54,13 @@ const projectSchema = new mongoose.Schema({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
+// Add Database Indexes for fast querying
+projectSchema.index({ category: 1 });
+projectSchema.index({ status: 1 });
+projectSchema.index({ project_manager_id: 1 });
+projectSchema.index({ social_worker_id: 1 });
+projectSchema.index({ show_on_home: 1 });
+projectSchema.index({ created_at: -1 });
+
 module.exports = mongoose.model('Project', projectSchema);
+

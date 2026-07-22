@@ -94,4 +94,11 @@ const profileSchema = new mongoose.Schema({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
+// Add Database Indexes for fast querying
+profileSchema.index({ role: 1 });
+profileSchema.index({ area_manager_id: 1 });
+profileSchema.index({ project_manager_id: 1 });
+profileSchema.index({ id_no: 1 });
+
 module.exports = mongoose.model('Profile', profileSchema);
+

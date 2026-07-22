@@ -16,9 +16,12 @@ class ApiService {
   }
 
   static String? _token;
+  static final Map<String, _CacheEntry> _cache = {};
+  static const Duration _cacheTtl = Duration(seconds: 30);
 
   void setToken(String? token) {
     _token = token;
+    _cache.clear();
   }
 
   Map<String, String> get _headers {
@@ -31,18 +34,36 @@ class ApiService {
     return headers;
   }
 
-  // GET Request
-  Future<dynamic> get(String endpoint) async {
+  // GET Request with In-Memory Caching
+  Future<dynamic> get(String endpoint, {bool forceRefresh = false}) async {
+    final now = DateTime.now();
+    if (!forceRefresh && _cache.containsKey(endpoint)) {
+      final entry = _cache[endpoint]!;
+      if (now.difference(entry.timestamp) < _cacheTtl) {
+        return entry.data;
+      }
+    }
+
     try {
       final response = await http.get(
         Uri.parse('$baseUrl$endpoint'),
         headers: _headers,
       );
-      return _processResponse(response);
+      final data = _processResponse(response);
+      _cache[endpoint] = _CacheEntry(timestamp: now, data: data);
+      return data;
     } catch (e) {
+      if (_cache.containsKey(endpoint)) {
+        return _cache[endpoint]!.data; // Fallback to stale cache if offline
+      }
       throw Exception('Connection error: $e');
     }
   }
+
+  static void clearCache() {
+    _cache.clear();
+  }
+
 
   // POST Request
   Future<dynamic> post(String endpoint, Map<String, dynamic> body) async {
@@ -173,3 +194,11 @@ class ApiService {
     }
   }
 }
+
+class _CacheEntry {
+  final DateTime timestamp;
+  final dynamic data;
+
+  _CacheEntry({required this.timestamp, required this.data});
+}
+

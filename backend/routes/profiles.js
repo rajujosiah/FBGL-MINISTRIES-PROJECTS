@@ -31,7 +31,8 @@ router.get('/', async (req, res) => {
     const profiles = await Profile.find(filter)
       .sort({ id_no: 1, name: 1 })
       .populate('area_manager_id', 'name id_no')
-      .populate('project_manager_id', 'name id_no');
+      .populate('project_manager_id', 'name id_no')
+      .lean();
 
     res.json(profiles);
   } catch (error) {
@@ -54,7 +55,8 @@ router.get('/:id', async (req, res) => {
       try {
         profile = await Profile.findById(req.params.id)
           .populate('area_manager_id', 'name id_no')
-          .populate('project_manager_id', 'name id_no');
+          .populate('project_manager_id', 'name id_no')
+          .lean();
       } catch (_) {}
     }
 
@@ -65,7 +67,8 @@ router.get('/:id', async (req, res) => {
         id_no: { $regex: new RegExp('^' + searchId.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i') } 
       })
       .populate('area_manager_id', 'name id_no')
-      .populate('project_manager_id', 'name id_no');
+      .populate('project_manager_id', 'name id_no')
+      .lean();
     }
 
     if (!profile) {
@@ -73,6 +76,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(profile);
   } catch (error) {
+
     console.error('Error fetching profile:', error);
     res.status(500).json({ error: 'Server error fetching profile' });
   }

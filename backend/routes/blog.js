@@ -27,7 +27,8 @@ router.get('/', async (req, res) => {
   try {
     const posts = await BlogPost.find({ published: true })
       .sort({ created_at: -1 })
-      .populate('author_id', 'name role');
+      .populate('author_id', 'name role')
+      .lean();
     res.json(posts);
   } catch (error) {
     console.error('Error fetching blog posts:', error);
@@ -43,7 +44,8 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const post = await BlogPost.findById(req.params.id)
-      .populate('author_id', 'name role');
+      .populate('author_id', 'name role')
+      .lean();
     if (!post) {
       return res.status(404).json({ error: 'Blog post not found' });
     }
@@ -53,6 +55,7 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error fetching blog post' });
   }
 });
+
 
 /**
  * @route   POST /api/blog

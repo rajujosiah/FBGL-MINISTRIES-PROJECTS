@@ -31,4 +31,8 @@ const blogPostSchema = new mongoose.Schema({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
+// Add Database Indexes for fast querying
+blogPostSchema.index({ published: 1, created_at: -1 });
+
 module.exports = mongoose.model('BlogPost', blogPostSchema);
+

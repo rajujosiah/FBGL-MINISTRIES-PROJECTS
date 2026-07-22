@@ -48,7 +48,7 @@ router.get('/', async (req, res) => {
   try {
     // If areaManagerId is provided, resolve PMs under them first
     if (areaManagerId) {
-      const projectManagers = await Profile.find({ role: 'project_manager', area_manager_id: areaManagerId });
+      const projectManagers = await Profile.find({ role: 'project_manager', area_manager_id: areaManagerId }).lean();
       const pmIds = projectManagers.map(pm => pm._id);
       if (pmIds.length > 0) {
         filter.project_manager_id = { $in: pmIds };
@@ -60,7 +60,8 @@ router.get('/', async (req, res) => {
     const projects = await Project.find(filter)
       .sort({ created_at: -1 })
       .populate('project_manager_id', 'name id_no')
-      .populate('social_worker_id', 'name id_no');
+      .populate('social_worker_id', 'name id_no')
+      .lean();
 
     res.json(projects);
   } catch (error) {
@@ -82,7 +83,8 @@ router.get('/:id', async (req, res) => {
         select: 'name id_no',
         populate: { path: 'area_manager_id', select: 'name id_no' }
       })
-      .populate('social_worker_id', 'name id_no');
+      .populate('social_worker_id', 'name id_no')
+      .lean();
 
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
@@ -93,6 +95,7 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error fetching project' });
   }
 });
+
 
 /**
  * @route   POST /api/projects

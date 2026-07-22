@@ -28,10 +28,9 @@ void main() async {
   // Enable clean URLs (remove '#' hash symbol in Web routes)
   usePathUrlStrategy();
 
-
-
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -141,33 +140,70 @@ class RouteBaseBuilder {
   }
 }
 
-// Wrapper to attach the header/footer automatically to all main public pages
-class PageShell extends StatelessWidget {
+// Wrapper to attach the header/footer automatically to all main public pages and reset scroll to top
+class PageShell extends StatefulWidget {
   final Widget page;
   final GoRouterState state;
 
   const PageShell({super.key, required this.page, required this.state});
 
   @override
+  State<PageShell> createState() => _PageShellState();
+}
+
+class _PageShellState extends State<PageShell> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollToTop();
+  }
+
+  @override
+  void didUpdateWidget(covariant PageShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.state.matchedLocation != widget.state.matchedLocation ||
+        oldWidget.page != widget.page) {
+      _scrollToTop();
+    }
+  }
+
+  void _scrollToTop() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(0.0);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isDashboard = state.matchedLocation.startsWith('/dashboard');
+    final bool isDashboard = widget.state.matchedLocation.startsWith('/dashboard');
 
     if (isDashboard) {
-      // Dashboards manage their own scaffold layout (usually sidebar + main view)
-      return page;
+      return widget.page;
     }
 
     return Scaffold(
-      appBar: CustomHeader(),
-      endDrawer: MobileDrawer(),
+      appBar: const CustomHeader(),
+      endDrawer: const MobileDrawer(),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           children: [
-            page,
-            CustomFooter(),
+            widget.page,
+            const CustomFooter(),
           ],
         ),
       ),
     );
   }
 }
+

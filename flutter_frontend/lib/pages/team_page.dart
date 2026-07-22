@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import '../widgets/responsive_layout.dart';
 import '../widgets/id_card_widget.dart';
+
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -640,8 +640,9 @@ class _TeamPageState extends State<TeamPage> with SingleTickerProviderStateMixin
     return Container(
       width: 100,
       height: 100,
-      color: AppTheme.primaryColor.withOpacity(0.1),
+      color: AppTheme.primaryColor.withValues(alpha: 0.1),
       child: const Icon(Icons.work, color: AppTheme.primaryColor, size: 32),
     );
   }
+
 }

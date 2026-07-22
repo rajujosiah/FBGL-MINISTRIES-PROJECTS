@@ -22,23 +22,52 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static uploads locally (fallback)
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// Database Connection (MongoDB)
+// Database Connection (MongoDB) with Serverless Connection Caching
 const mongoURI = process.env.MONGODB_URI || 'mongodb://fbglministries2016_db_user:LuyNgH2gPY7fuOi9@ac-sysletb-shard-00-00.zw4qyzh.mongodb.net:27017,ac-sysletb-shard-00-01.zw4qyzh.mongodb.net:27017,ac-sysletb-shard-00-02.zw4qyzh.mongodb.net:27017/fbgl?ssl=true&replicaSet=atlas-zl7r5s-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0';
-const localMongoURI = 'mongodb://127.0.0.1:27017/fbgl';
 
-mongoose.connect(mongoURI)
-  .then(() => console.log('💾 MongoDB Connected Successfully to Atlas Cloud'))
-  .catch(err => {
-    console.error('❌ MongoDB Atlas connection error:', err.message);
-    console.log('🔄 Attempting to connect to local MongoDB (mongodb://127.0.0.1:27017/fbgl)...');
-    
-    mongoose.connect(localMongoURI)
-      .then(() => console.log('💾 MongoDB Connected Successfully to Local Instance'))
-      .catch(localErr => {
-        console.error('❌ Local MongoDB connection error:', localErr.message);
-        console.log('⚠️ Running in OFFLINE/DEMO mode. DB operations will fail until MongoDB is started or configured.');
-      });
-  });
+let cached = global.mongoose;
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectToDatabase() {
+  if (cached.conn && mongoose.connection.readyState === 1) {
+    return cached.conn;
+  }
+  if (!cached.promise) {
+    const opts = {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    };
+    cached.promise = mongoose.connect(mongoURI, opts).then((m) => {
+      console.log('💾 MongoDB Connected Successfully to Atlas Cloud');
+      return m;
+    });
+  }
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+  return cached.conn;
+}
+
+// Middleware to ensure DB connection & set caching headers for GET requests
+app.use(async (req, res, next) => {
+  if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+  }
+  try {
+    await connectToDatabase();
+    next();
+  } catch (err) {
+    console.error('❌ MongoDB Connection error:', err.message);
+    next();
+  }
+});
+
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
